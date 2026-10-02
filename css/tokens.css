@@ -1,0 +1,83 @@
+/* Work — design tokens
+ *
+ * Palette: warm-white surfaces, near-black ink, a single confident blue accent
+ * (the same family Apple reaches for on its own product pages — #0071E3 —
+ * rather than the brighter iOS system blue, since this app sits still on a
+ * page instead of a status bar). Everything else stays quiet so the blue
+ * only appears where it matters: the next action, focus state, priority.
+ */
+:root {
+  /* Color */
+  --ink: #1d1d1f;
+  --ink-soft: #6e6e73;
+  --ink-faint: #a1a1a6;
+  --paper: #fbfbfb;
+  --surface: #ffffff;
+  --surface-sunken: #f4f4f5;
+  --line: #e5e5e7;
+  --accent: #0071e3;
+  --accent-ink: #ffffff;
+  --accent-wash: #eaf3fe;
+  --danger: #d6462f;
+  --danger-wash: #fcecea;
+  --good: #1f8a4c;
+
+  --priority-low: #6e9c7d;
+  --priority-medium: #c98a2c;
+  --priority-high: #d6462f;
+
+  --focus-ring: #0071e3;
+
+  /* Type */
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Inter, Roboto, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Inter, sans-serif;
+
+  /* Spacing (4px base) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-7: 32px;
+  --sp-8: 40px;
+
+  /* Radius */
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-full: 999px;
+
+  /* Shadow — soft and low-contrast; the accent, not the shadow, carries emphasis */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.14);
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 140ms;
+  --dur-med: 240ms;
+  --dur-slow: 420ms;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #f5f5f7;
+    --ink-soft: #a1a1a6;
+    --ink-faint: #6e6e73;
+    --paper: #000000;
+    --surface: #1c1c1e;
+    --surface-sunken: #131315;
+    --line: #2c2c2e;
+    --accent: #2b8aff;
+    --accent-wash: #14243c;
+    --danger: #ff6b57;
+    --danger-wash: #3a1a16;
+    --good: #35c878;
+  }
+}
+
+* { box-sizing: border-box; }

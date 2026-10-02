@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Work</title>
+<meta name="description" content="Tasks, focus timer and alarms in one calm place." />
+<meta name="theme-color" content="#fbfbfb" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Work" />
+
+<link rel="stylesheet" href="css/tokens.css" />
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/icons.css" />
+<link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+
+<!-- App shell is built entirely in JS (js/app.js) -->
+
+<script src="js/core/utils.js"></script>
+<script src="js/core/events.js"></script>
+<script src="js/core/title.js"></script>
+<script src="js/core/dates.js"></script>
+<script src="js/core/store.js"></script>
+<script src="js/core/router.js"></script>
+
+<script src="js/services/audio.js"></script>
+<script src="js/services/notify.js"></script>
+<script src="js/services/wake.js"></script>
+<script src="js/services/timer.js"></script>
+<script src="js/services/alarms.js"></script>
+<script src="js/services/assistant.js"></script>
+
+<script src="js/ui/dom.js"></script>
+<script src="js/ui/toast.js"></script>
+<script src="js/ui/sheet.js"></script>
+<script src="js/ui/ring.js"></script>
+<script src="js/ui/task-editor.js"></script>
+<script src="js/ui/alarm-editor.js"></script>
+
+<script src="js/views/tasks.js"></script>
+<script src="js/views/focus.js"></script>
+<script src="js/views/alarms.js"></script>
+<script src="js/views/settings.js"></script>
+
+<script src="js/app.js"></script>
+</body>
+</html>
