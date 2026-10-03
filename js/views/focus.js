@@ -14,6 +14,7 @@
   let cyclesEl = null;
   let controlsEl = null;
   let pickerBtn = null;
+  let wrapEl = null;
 
   function fractionElapsed() {
     const f = W.store.state.focus;
@@ -24,15 +25,15 @@
   function paintClock() {
     if (!clockEl) return;
     const { remaining, fraction } = fractionElapsed();
-    clockEl.textContent = U.fmtClock(remaining);
+    W.dom.setClock(clockEl, U.fmtClock(remaining));
     ring.set(fraction);
   }
 
   function taskLabel() {
     const f = W.store.state.focus;
-    if (!f.taskId) return 'No task selected';
+    if (!f.taskId) return 'Choose what to focus on';
     const t = W.store.getTask(f.taskId);
-    return t ? t.title : 'No task selected';
+    return t ? t.title : 'Choose what to focus on';
   }
 
   function openPicker() {
@@ -40,7 +41,6 @@
     const body = h(
       'div',
       { class: 'task-picker' },
-      h('div', { class: 'sheet-handle' }),
       h('h2', { class: 'sheet-title', text: 'Focus on…' }),
       open.length
         ? h(
@@ -90,6 +90,8 @@
   function render() {
     if (!root) return;
     const f = W.store.state.focus;
+    wrapEl.classList.toggle('is-running', f.status === 'running');
+    wrapEl.setAttribute('data-phase', f.phase);
     phaseEl.textContent = PHASE_LABEL[f.phase];
     phaseEl.setAttribute('data-phase', f.phase);
     ring.setPhase(f.phase);
@@ -99,28 +101,28 @@
     paintClock();
     W.dom.clear(controlsEl);
     controls().forEach((n) => controlsEl.appendChild(n));
-
-    if (f.status === 'running') {
-      W.title.set('timer', U.fmtClock(fractionElapsed().remaining) + ' · ' + PHASE_LABEL[f.phase]);
-    } else {
-      W.title.clear('timer');
-    }
   }
 
   function mount(el) {
     root = el;
     W.dom.clear(root);
     ring = W.ring.create();
-    clockEl = h('div', { class: 'focus-clock', text: '25:00' });
+    clockEl = h('div', { class: 'focus-clock' });
     phaseEl = h('div', { class: 'focus-phase', text: 'Focus' });
     const ringWrap = h('div', { class: 'ring-wrap' }, ring.el, h('div', { class: 'ring-center' }, phaseEl, clockEl));
-    taskNameEl = h('span', { class: 'focus-task-name', text: 'No task selected' });
+    taskNameEl = h('span', { class: 'focus-task-name', text: 'Choose what to focus on' });
     pickerBtn = h('button', { class: 'focus-task-picker', type: 'button', onClick: openPicker }, W.dom.icon('task'), taskNameEl, W.dom.icon('chevron'));
     cyclesEl = h('p', { class: 'focus-cycles', text: 'Round 1 of 4' });
+    const hint = h('p', { class: 'focus-hint' }, h('kbd', { class: 'kbd', text: 'Space' }), ' to start or pause');
     controlsEl = h('div', { class: 'focus-controls' });
 
-    root.appendChild(h('div', { class: 'focus-view' }, pickerBtn, ringWrap, cyclesEl, controlsEl));
+    wrapEl = h('div', { class: 'focus-view' }, pickerBtn, ringWrap, cyclesEl, controlsEl, hint);
+    root.appendChild(wrapEl);
     render();
+  }
+
+  function unmount() {
+    root = wrapEl = ring = clockEl = phaseEl = taskNameEl = cyclesEl = controlsEl = pickerBtn = null;
   }
 
   W.events.on('focus', render);
@@ -129,5 +131,5 @@
   W.events.on('timer:tick', paintClock);
 
   W.views = W.views || {};
-  W.views.focus = { mount, render };
+  W.views.focus = { mount, unmount, render };
 })((window.Work = window.Work || {}));

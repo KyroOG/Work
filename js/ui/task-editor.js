@@ -86,7 +86,6 @@
     const body = h(
       'form',
       { class: 'task-editor', onSubmit: (e) => { e.preventDefault(); save(); } },
-      h('div', { class: 'sheet-handle' }),
       h('h2', { class: 'sheet-title', text: isNew ? 'New task' : 'Edit task' }),
       titleInput,
       notesInput,

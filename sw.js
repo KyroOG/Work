@@ -2,11 +2,12 @@
  * Cache-first for the app shell; everything here is static and local, so a
  * simple versioned cache is enough. Bump CACHE to force an update.
  */
-const CACHE = 'work-v1';
+const CACHE = 'work-v4';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './css/fonts.css',
   './css/tokens.css',
   './css/base.css',
   './css/icons.css',
@@ -34,6 +35,9 @@ const ASSETS = [
   './js/views/alarms.js',
   './js/views/settings.js',
   './js/app.js',
+  './fonts/fraunces-soft.woff2',
+  './fonts/fraunces-soft-italic.woff2',
+  './fonts/dm-sans.woff2',
   './icons/icon-192.png',
   './icons/icon-512.png',
 ];

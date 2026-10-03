@@ -84,7 +84,6 @@
     const body = h(
       'form',
       { class: 'alarm-editor', onSubmit: (e) => { e.preventDefault(); save(); } },
-      h('div', { class: 'sheet-handle' }),
       h('h2', { class: 'sheet-title', text: isNew ? 'New alarm' : 'Edit alarm' }),
       h('div', { class: 'time-picker-row' }, timeInput),
       labelInput,

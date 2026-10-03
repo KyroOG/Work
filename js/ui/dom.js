@@ -35,5 +35,31 @@
     return span;
   }
 
-  W.dom = { h, clear, icon };
+  /** Shared page header: title + quiet subtitle on the left, one primary action on the right. */
+  function pageHeader(opts) {
+    return h(
+      'header',
+      { class: 'page-head' },
+      h('div', { class: 'page-head-text' },
+        h('h1', { class: 'page-title', text: opts.title }),
+        opts.sub ? h('p', { class: 'page-sub', text: opts.sub }) : null
+      ),
+      opts.action
+        ? h('button', { class: 'btn btn-primary', type: 'button', onClick: opts.action.onClick },
+            opts.action.label,
+            opts.action.key ? h('kbd', { class: 'kbd kbd-on-accent', text: opts.action.key }) : null)
+        : null
+    );
+  }
+
+  /** Clock text in fixed-width cells — the serif has no tabular digits, so the time would wobble. */
+  function setClock(el, text) {
+    if (el._clock === text) return;
+    el._clock = text;
+    clear(el);
+    el.setAttribute('aria-label', text);
+    for (const ch of text) el.appendChild(h('span', { class: ch === ':' ? 'c-colon' : 'c-digit', text: ch, 'aria-hidden': 'true' }));
+  }
+
+  W.dom = { h, clear, icon, pageHeader, setClock };
 })((window.Work = window.Work || {}));

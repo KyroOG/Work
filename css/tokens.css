@@ -1,36 +1,37 @@
 /* Work — design tokens
  *
- * Palette: warm-white surfaces, near-black ink, a single confident blue accent
- * (the same family Apple reaches for on its own product pages — #0071E3 —
- * rather than the brighter iOS system blue, since this app sits still on a
- * page instead of a status bar). Everything else stays quiet so the blue
- * only appears where it matters: the next action, focus state, priority.
+ * Direction: a quiet desk at dusk. Warm paper instead of white, one muted moss
+ * green instead of a loud blue, and a soft serif (Fraunces) for the few
+ * moments that should feel human — greetings, the clock, group labels.
+ * Everything else is a calm humanist sans (DM Sans). Motion is slow and
+ * eased out; nothing bounces, nothing flashes.
  */
 :root {
-  /* Color */
-  --ink: #1d1d1f;
-  --ink-soft: #6e6e73;
-  --ink-faint: #a1a1a6;
-  --paper: #fbfbfb;
-  --surface: #ffffff;
-  --surface-sunken: #f4f4f5;
-  --line: #e5e5e7;
-  --accent: #0071e3;
-  --accent-ink: #ffffff;
-  --accent-wash: #eaf3fe;
-  --danger: #d6462f;
-  --danger-wash: #fcecea;
-  --good: #1f8a4c;
+  /* Color — paper, ink, moss */
+  --ink: #2b2a26;
+  --ink-soft: #6b6a62;
+  --ink-faint: #a09e94;
+  --paper: #f6f3ec;
+  --surface: #fbf9f4;
+  --surface-sunken: #eeeadf;
+  --line: #e4dfd2;
+  --accent: #4a6b58;
+  --accent-ink: #f8f6ef;
+  --accent-wash: #e3e9de;
+  --danger: #b0503a;
+  --danger-wash: #f3e1db;
+  --good: #4a6b58;
+  --rest: #b08a5b; /* breaks: warm sand */
 
-  --priority-low: #6e9c7d;
-  --priority-medium: #c98a2c;
-  --priority-high: #d6462f;
+  --priority-low: #7e9a86;
+  --priority-medium: #b58a33;
+  --priority-high: #b0503a;
 
-  --focus-ring: #0071e3;
+  --focus-ring: #4a6b58;
 
   /* Type */
-  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Inter, Roboto, sans-serif;
-  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Inter, sans-serif;
+  --font: "DM Sans", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
 
   /* Spacing (4px base) */
   --sp-1: 4px;
@@ -43,40 +44,44 @@
   --sp-8: 40px;
 
   /* Radius */
-  --r-sm: 10px;
-  --r-md: 16px;
+  --r-sm: 9px;
+  --r-md: 14px;
   --r-lg: 22px;
   --r-full: 999px;
 
-  /* Shadow — soft and low-contrast; the accent, not the shadow, carries emphasis */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.14);
+  /* Shadow — barely there */
+  --shadow-sm: 0 1px 2px rgba(60, 50, 30, 0.05);
+  --shadow-md: 0 8px 24px rgba(60, 50, 30, 0.08);
+  --shadow-lg: 0 24px 64px rgba(60, 50, 30, 0.16);
 
-  /* Motion */
-  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --dur-fast: 140ms;
-  --dur-med: 240ms;
-  --dur-slow: 420ms;
-
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* Motion — slow in, softer out */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 180ms;
+  --dur-med: 320ms;
+  --dur-slow: 640ms;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --ink: #f5f5f7;
-    --ink-soft: #a1a1a6;
-    --ink-faint: #6e6e73;
-    --paper: #000000;
-    --surface: #1c1c1e;
-    --surface-sunken: #131315;
-    --line: #2c2c2e;
-    --accent: #2b8aff;
-    --accent-wash: #14243c;
-    --danger: #ff6b57;
-    --danger-wash: #3a1a16;
-    --good: #35c878;
+    --ink: #ebe7dc;
+    --ink-soft: #a7a498;
+    --ink-faint: #6f6d64;
+    --paper: #191814;
+    --surface: #211f1b;
+    --surface-sunken: #272520;
+    --line: #34312a;
+    --accent: #93b39f;
+    --accent-ink: #14130f;
+    --accent-wash: #26302a;
+    --danger: #d98670;
+    --danger-wash: #382420;
+    --good: #93b39f;
+    --rest: #c9a574;
+    --priority-low: #8fae98;
+    --priority-medium: #d0a857;
+    --priority-high: #d98670;
+    --focus-ring: #93b39f;
+    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.5);
   }
 }
 

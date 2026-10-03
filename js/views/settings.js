@@ -42,9 +42,11 @@
     W.dom.clear(root);
     const s = W.store.state.settings;
 
-    root.appendChild(h('h1', { class: 'view-title', text: 'Settings' }));
+    root.appendChild(W.dom.pageHeader({ title: 'Settings', sub: 'Everything is stored on this computer.' }));
+    const grid = h('div', { class: 'settings-grid' });
+    root.appendChild(grid);
 
-    root.appendChild(
+    grid.appendChild(
       section(
         'Timer',
         row('Focus length', numberField(s.focusMin, (v) => W.store.setSettings({ focusMin: v }), 1, 120), 'minutes'),
@@ -57,7 +59,7 @@
       )
     );
 
-    root.appendChild(
+    grid.appendChild(
       section(
         'Sound & notifications',
         row('Sounds', toggle(s.timerSound, (v) => W.store.setSettings({ timerSound: v }), 'Sounds')),
@@ -76,7 +78,7 @@
       )
     );
 
-    root.appendChild(
+    grid.appendChild(
       section(
         'Display',
         row('24-hour clock', toggle(s.clock24, (v) => W.store.setSettings({ clock24: v }), '24-hour clock')),
@@ -84,7 +86,7 @@
       )
     );
 
-    root.appendChild(
+    grid.appendChild(
       section(
         'Backup',
         row('Export data', h('button', { class: 'btn btn-ghost', type: 'button', text: 'Export', onClick: doExport })),
@@ -117,7 +119,6 @@
     const body = h(
       'div',
       { class: 'confirm' },
-      h('div', { class: 'sheet-handle' }),
       h('h2', { class: 'sheet-title', text: 'Reset Work?' }),
       h('p', { class: 'confirm-body', text: 'This deletes every task, alarm and setting on this device. It can’t be undone.' }),
       h(
@@ -136,9 +137,12 @@
     root = el;
     render();
   }
+  function unmount() {
+    root = null;
+  }
 
   W.events.on('settings', render);
 
   W.views = W.views || {};
-  W.views.settings = { mount, render };
+  W.views.settings = { mount, unmount, render };
 })((window.Work = window.Work || {}));

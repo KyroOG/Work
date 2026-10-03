@@ -43,7 +43,7 @@
       { class: 'empty-state' },
       W.dom.icon('bell'),
       h('p', { class: 'empty-title', text: 'No alarms yet' }),
-      h('p', { class: 'empty-body', text: 'Add one below — it’ll ring while Work is open in this browser.' })
+      h('p', { class: 'empty-body', text: 'Press N to add one. It rings while Work is open.' })
     );
   }
 
@@ -51,15 +51,17 @@
     if (!root) return;
     W.dom.clear(root);
     const alarms = W.store.state.alarms.slice().sort((a, b) => a.time.localeCompare(b.time));
-    root.appendChild(h('h1', { class: 'view-title', text: 'Alarms' }));
+    const on = alarms.filter((a) => a.enabled).length;
+    root.appendChild(W.dom.pageHeader({
+      title: 'Alarms',
+      sub: alarms.length ? on + ' of ' + alarms.length + ' on · rings while Work is open' : 'Rings while Work is open',
+      action: { label: 'New alarm', key: 'N', onClick: () => W.alarmEditor.open(null) },
+    }));
     if (!alarms.length) {
       root.appendChild(emptyState());
     } else {
       root.appendChild(h('ul', { class: 'alarm-list' }, alarms.map(alarmRow)));
     }
-    root.appendChild(
-      h('button', { class: 'btn btn-primary btn-add-alarm', type: 'button', text: '+ Add alarm', onClick: () => W.alarmEditor.open(null) })
-    );
   }
 
   function showRingingOverlay(alarm) {
@@ -93,6 +95,9 @@
     root = el;
     render();
   }
+  function unmount() {
+    root = null;
+  }
 
   W.events.on('alarms', render);
   W.events.on('settings', render);
@@ -101,5 +106,5 @@
   W.events.on('alarm:snooze', hideRingingOverlay);
 
   W.views = W.views || {};
-  W.views.alarms = { mount, render, fab: () => W.alarmEditor.open(null) };
+  W.views.alarms = { mount, unmount, render, add: () => W.alarmEditor.open(null) };
 })((window.Work = window.Work || {}));
