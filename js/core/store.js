@@ -34,6 +34,7 @@
     notifications: false,
     clock24: false,
     sort: 'smart',
+    hideCompleted: false,
   });
 
   /* ------------------------------------------------------------------ */
@@ -100,6 +101,7 @@
       notifications: bool(s.notifications, d.notifications),
       clock24: bool(s.clock24, d.clock24),
       sort: SORTS.includes(s.sort) ? s.sort : d.sort,
+      hideCompleted: bool(s.hideCompleted, d.hideCompleted),
     };
   }
 
@@ -188,8 +190,8 @@
     const today = U.dayKey();
     const now = Date.now();
     s.tasks = [
-      { title: 'Try a focus session', notes: 'Tap the play button on any task to start a Pomodoro for it.', priority: 'high', due: today, estimate: 1 },
-      { title: 'Add your first real task', notes: 'Tap + and type naturally, like “Call mom tomorrow 5pm !high”.', priority: 'medium', due: today },
+      { title: 'Try a focus session', notes: 'Click the play button on any task to start a Pomodoro for it.', priority: 'high', due: today, estimate: 1 },
+      { title: 'Add your first real task', notes: 'Type in the bar above, like “Call mom tomorrow 5pm !high”.', priority: 'medium', due: today },
       { title: 'Set a morning alarm', notes: 'Alarms live in their own tab and ring while Work is open.', priority: 'low', due: U.addDays(today, 1), time: '09:00' },
     ].map((t, i) => normTask(Object.assign({}, t, { id: U.uid(), createdAt: now + i, order: i + 1 })));
     return s;

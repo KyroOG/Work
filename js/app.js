@@ -110,7 +110,7 @@
     const sidebar = h(
       'aside',
       { class: 'sidebar' },
-      h('div', { class: 'brand' }, h('span', { class: 'brand-mark' }), h('span', { class: 'brand-name', text: 'Work' })),
+      h('div', { class: 'brand' }, W.dom.icon('logo'), h('span', { class: 'brand-name', text: 'Work' })),
       h(
         'nav',
         { class: 'nav', 'aria-label': 'Sections' },

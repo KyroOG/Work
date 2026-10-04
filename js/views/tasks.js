@@ -7,6 +7,7 @@
 
   let root = null;
   let quickEl = null;
+  let revealDone = false; // true for one render after the Completed group is expanded
 
   function quickAdd() {
     const input = h('input', {
@@ -21,7 +22,7 @@
       { class: 'quickadd', onSubmit: submit },
       W.dom.icon('plus'),
       input,
-      h('kbd', { class: 'kbd', text: '/' }),
+      h('kbd', { class: 'kbd', text: 'N' }),
       h('button', { type: 'submit', class: 'quickadd-go', 'aria-label': 'Add task' }, W.dom.icon('arrow-up'))
     );
     function submit(e) {
@@ -36,11 +37,16 @@
     return form;
   }
 
-  function taskRow(t) {
+  function focusQuick() {
+    const input = document.querySelector('.quickadd-input');
+    if (input) input.focus();
+  }
+
+  function taskRow(t, reveal) {
     const overdue = !t.done && t.due && t.due < U.dayKey();
     const row = h(
       'li',
-      { class: 'task' + (t.done ? ' is-done' : '') + (overdue ? ' is-overdue' : ''), 'data-id': t.id },
+      { class: 'task' + (t.done ? ' is-done' : '') + (overdue ? ' is-overdue' : '') + (reveal ? ' is-revealed' : ''), 'data-id': t.id },
       h('button', {
         class: 'task-check',
         type: 'button',
@@ -53,6 +59,7 @@
         'div',
         { class: 'task-body', onClick: () => W.taskEditor.open(t), role: 'button', tabIndex: 0, onKeydown: (e) => { if (e.key === 'Enter') W.taskEditor.open(t); } },
         h('p', { class: 'task-title', text: t.title }),
+        t.notes ? h('p', { class: 'task-notes', text: t.notes }) : null,
         h('div', { class: 'task-meta' },
           t.priority !== 'none' ? h('span', { class: 'chip chip-' + t.priority, text: t.priority }) : null,
           t.due ? h('span', { class: 'task-due' + (overdue ? ' is-overdue' : ''), text: U.fmtDue(t.due, t.time, W.store.state.settings.clock24) }) : null,
@@ -75,6 +82,20 @@
     return row;
   }
 
+  function completedToggle(count, collapsed) {
+    return h('li', { class: 'task-group-label' },
+      h('button', {
+        class: 'group-toggle' + (collapsed ? '' : ' is-open'),
+        type: 'button',
+        'aria-expanded': collapsed ? 'false' : 'true',
+        onClick: () => {
+          revealDone = collapsed;
+          W.store.setSettings({ hideCompleted: !collapsed });
+        },
+      }, W.dom.icon('chevron'), h('span', { text: 'Completed' }), h('span', { class: 'group-count', text: String(count) }))
+    );
+  }
+
   function emptyState() {
     return h(
       'div',
@@ -94,7 +115,7 @@
       h('span', { class: 'rail-label', text: 'Sort by' }),
       h(
         'select',
-        { class: 'field-select sort-select', 'aria-label': 'Sort tasks by', onChange: (e) => W.store.setSettings({ sort: e.target.value }) },
+        { class: 'sort-select', 'aria-label': 'Sort tasks by', onChange: (e) => W.store.setSettings({ sort: e.target.value }) },
         modes.map(([val, label]) => h('option', { value: val, selected: val === current ? true : null, text: label }))
       )
     );
@@ -155,7 +176,7 @@
     const today = U.dayKey();
     const sum = A.daySummary(state.tasks);
 
-    root.appendChild(W.dom.pageHeader({ title: sum.hello, sub: sum.line, action: { label: 'New task', key: 'N', onClick: () => W.taskEditor.open(null) } }));
+    root.appendChild(W.dom.pageHeader({ title: sum.hello, sub: sum.line }));
     if (!quickEl) quickEl = quickAdd();
     root.appendChild(quickEl);
 
@@ -166,19 +187,24 @@
       const list = h('ul', { class: 'task-list' });
       let lastGroup = null;
       let doneStarted = false;
+      const collapsed = state.settings.hideCompleted;
+      const doneCount = state.tasks.filter((t) => t.done).length;
       sorted.forEach((t) => {
         if (t.done && !doneStarted) {
           doneStarted = true;
-          list.appendChild(h('li', { class: 'task-group-label', text: 'Completed' }));
-        } else if (!t.done && state.settings.sort === 'smart') {
+          list.appendChild(completedToggle(doneCount, collapsed));
+        }
+        if (t.done && collapsed) return;
+        if (!t.done && state.settings.sort === 'smart') {
           const g = A.groupLabel(t, today);
           if (g !== lastGroup) {
             lastGroup = g;
             list.appendChild(h('li', { class: 'task-group-label', text: g }));
           }
         }
-        list.appendChild(taskRow(t));
+        list.appendChild(taskRow(t, t.done && revealDone));
       });
+      revealDone = false;
       main.appendChild(list);
     }
     root.appendChild(h('div', { class: 'tasks-layout' }, main, state.tasks.length ? rail(state, today) : null));
@@ -198,5 +224,5 @@
   W.events.on('settings', render);
 
   W.views = W.views || {};
-  W.views.tasks = { mount, unmount, render, add: () => W.taskEditor.open(null) };
+  W.views.tasks = { mount, unmount, render, add: focusQuick };
 })((window.Work = window.Work || {}));

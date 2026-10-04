@@ -4,7 +4,6 @@ html, body { height: 100%; overflow: hidden; }
 body {
   margin: 0;
   min-width: 960px;
-  min-height: 600px;
   font-family: var(--font);
   font-size: 14.5px;
   line-height: 1.5;
@@ -34,9 +33,10 @@ ul { list-style: none; margin: 0; padding: 0; }
 .view:focus-visible { outline: none; }
 :focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 6px; }
 
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--ink) 14%, transparent); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
-::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); background-clip: content-box; border: 2px solid transparent; }
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-thumb { background: transparent; border-radius: 10px; border: 3px solid transparent; background-clip: content-box; }
+.view:hover::-webkit-scrollbar-thumb, .task-picker-list:hover::-webkit-scrollbar-thumb, .sheet:hover::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--ink) 16%, transparent); background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background: var(--ink-faint) !important; background-clip: content-box !important; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -57,7 +57,7 @@ ul { list-style: none; margin: 0; padding: 0; }
   transition: opacity var(--dur-slow) var(--ease);
 }
 .brand { display: flex; align-items: center; gap: 10px; padding: 0 var(--sp-3); }
-.brand-mark { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--accent); border-top-color: transparent; transform: rotate(-35deg); }
+.brand .icon-logo { width: 22px; height: 22px; color: var(--accent); }
 .brand-name { font-family: var(--font-display); font-size: 20px; font-weight: 400; letter-spacing: -0.01em; }
 
 .nav { display: flex; flex-direction: column; gap: 2px; }
@@ -113,9 +113,10 @@ ul { list-style: none; margin: 0; padding: 0; }
 .mini-timer.is-running .mini-phase::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-right: 6px; vertical-align: 1px; animation: breathe-dot 3.2s ease-in-out infinite; }
 @keyframes breathe-dot { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
 
-.view { overflow-y: auto; padding: 48px 64px 80px; }
-.page { max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--sp-7); animation: page-in var(--dur-slow) var(--ease) both; }
-@keyframes page-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.view { overflow-y: auto; padding: 40px 56px 40px; }
+.page { max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--sp-6); animation: page-in var(--dur-slow) var(--ease) both; }
+/* Fade only (no translate): a moving page briefly adds scroll height and flashes a scrollbar on every tab switch. */
+@keyframes page-in { from { opacity: 0; } to { opacity: 1; } }
 .page[data-view="alarms"] { max-width: 680px; }
 .page[data-view="focus"] { max-width: 560px; }
 .page[data-view="settings"] { max-width: 960px; }
