@@ -16,6 +16,7 @@
   }
 
   function onKeydown(e) {
+    if (document.querySelector('.select-menu')) return; // an open dropdown owns the keyboard
     if (e.key === 'Escape') {
       e.preventDefault();
       close();

@@ -58,18 +58,19 @@
       )
     );
 
-    const snoozeSelect = h(
-      'select',
-      { class: 'field-select', 'aria-label': 'Snooze length' },
-      SNOOZE.map((n) => h('option', { value: n, selected: n === draft.snooze ? true : null, text: n + ' min' }))
-    );
+    const snoozeSelect = W.select.create({
+      options: SNOOZE.map((n) => [n, n + ' min']),
+      value: draft.snooze,
+      label: 'Snooze length',
+      variant: 'field',
+    });
 
     function save() {
       if (!timeInput.value) {
         timeInput.focus();
         return;
       }
-      const payload = { time: timeInput.value, label: labelInput.value.trim(), days, sound, snooze: parseInt(snoozeSelect.value, 10) };
+      const payload = { time: timeInput.value, label: labelInput.value.trim(), days, sound, snooze: parseInt(snoozeSelect.getValue(), 10) };
       if (isNew) W.store.addAlarm(payload);
       else W.store.updateAlarm(alarm.id, payload);
       W.sheet.close();
@@ -87,9 +88,9 @@
       h('h2', { class: 'sheet-title', text: isNew ? 'New alarm' : 'Edit alarm' }),
       h('div', { class: 'time-picker-row' }, timeInput),
       labelInput,
-      h('label', { class: 'field-label' }, h('span', { text: 'Repeat' }), dayGroup),
-      h('label', { class: 'field-label' }, h('span', { text: 'Sound' }), soundGroup),
-      h('label', { class: 'field-label field-label-inline' }, h('span', { text: 'Snooze' }), snoozeSelect),
+      h('div', { class: 'field-label' }, h('span', { text: 'Repeat' }), dayGroup),
+      h('div', { class: 'field-label' }, h('span', { text: 'Sound' }), soundGroup),
+      h('div', { class: 'field-label field-label-inline' }, h('span', { text: 'Snooze' }), snoozeSelect.el),
       h(
         'div',
         { class: 'sheet-actions' },

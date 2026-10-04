@@ -109,16 +109,15 @@
   function sortControl() {
     const modes = [['smart', 'Smart'], ['priority', 'Priority'], ['due', 'Due date'], ['manual', 'Manual']];
     const current = W.store.state.settings.sort;
-    return h(
-      'label',
-      { class: 'rail-field' },
-      h('span', { class: 'rail-label', text: 'Sort by' }),
-      h(
-        'select',
-        { class: 'sort-select', 'aria-label': 'Sort tasks by', onChange: (e) => W.store.setSettings({ sort: e.target.value }) },
-        modes.map(([val, label]) => h('option', { value: val, selected: val === current ? true : null, text: label }))
-      )
-    );
+    const sel = W.select.create({
+      options: modes,
+      value: current,
+      label: 'Sort tasks by',
+      variant: 'quiet',
+      align: 'end',
+      onChange: (v) => W.store.setSettings({ sort: v }),
+    });
+    return h('div', { class: 'rail-field' }, h('span', { class: 'rail-label', text: 'Sort by' }), sel.el);
   }
 
   function stat(num, label, tone) {

@@ -99,7 +99,7 @@
           timeInput
         )
       ),
-      h('label', { class: 'field-label' }, h('span', { text: 'Priority' }), priorityGroup),
+      h('div', { class: 'field-label' }, h('span', { text: 'Priority' }), priorityGroup),
       h('label', { class: 'field-label field-label-inline' },
         h('span', { text: 'Estimated pomodoros' }),
         estInput

@@ -69,8 +69,6 @@
 .rail-label { font-size: 12.5px; color: var(--ink-faint); }
 .rail-field { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); }
 .next-title { font-family: var(--font-display); font-size: 21px; font-weight: 350; line-height: 1.3; letter-spacing: -0.01em; word-break: break-word; }
-.sort-select, .sort-select:hover, .sort-select:focus { border: 0; background: transparent; padding: 4px 0 4px 8px; font-size: 14px; color: var(--ink-soft); cursor: pointer; transition: color var(--dur-fast) var(--ease); }
-.sort-select:hover, .sort-select:focus-visible { color: var(--ink); }
 
 /* ---- Task list ---- */
 .task-group-label { font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: 17px; color: var(--ink-soft); padding: 30px 0 6px; }
@@ -180,7 +178,7 @@
 .field-row { display: flex; gap: var(--sp-3); }
 .field-label { display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--ink-soft); flex: 1; }
 .field-label-inline { flex-direction: row; align-items: center; justify-content: space-between; }
-.field-date, .field-time, .field-estimate, .field-number, .field-select, .field-inline { padding: 8px 10px; font-size: 14px; }
+.field-date, .field-time, .field-estimate, .field-number, .field-inline { padding: 8px 10px; font-size: 14px; }
 .field-estimate, .field-number { width: 76px; }
 .field-inline { width: 180px; }
 .field-time-lg, .field-time-lg:hover, .field-time-lg:focus { font-size: 56px; font-family: var(--font-display); font-weight: 300; padding: 6px; text-align: center; border: 0; background: transparent; }
@@ -216,6 +214,23 @@
 .task-picker-list { display: flex; flex-direction: column; gap: 2px; max-height: 50vh; overflow-y: auto; }
 .task-picker-row { width: 100%; text-align: left; padding: 10px; border-radius: var(--r-sm); font-size: 14.5px; }
 .task-picker-row:hover, .task-picker-row:focus-visible { background: var(--surface-sunken); }
+
+/* ---- Select (themed dropdown) ---- */
+.select { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink-soft); cursor: pointer; transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
+.select .icon { width: 12px; height: 12px; color: var(--ink-faint); transform: rotate(90deg); transition: transform var(--dur-fast) var(--ease); }
+.select[aria-expanded="true"] .icon { transform: rotate(-90deg); }
+.select-quiet { padding: 4px 8px; margin-right: -8px; border-radius: var(--r-sm); }
+.select-quiet:hover, .select-quiet[aria-expanded="true"] { color: var(--ink); background: color-mix(in srgb, var(--ink) 5%, transparent); }
+.select-field { justify-content: space-between; min-width: 104px; padding: 8px 12px; border: 1px solid transparent; border-radius: var(--r-sm); background: var(--surface-sunken); color: var(--ink); }
+.select-field:hover { border-color: var(--line); }
+.select-field[aria-expanded="true"] { border-color: var(--accent); background: var(--surface); }
+.select-menu { position: fixed; z-index: 90; margin: 0; padding: 4px; list-style: none; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow-md); outline: none; opacity: 0; transform: translateY(-4px); transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease); }
+.select-menu.is-visible { opacity: 1; transform: none; }
+.select-option { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); padding: 8px 10px; border-radius: var(--r-sm); font-size: 14px; color: var(--ink); cursor: pointer; }
+.select-option.is-active { background: var(--accent-wash); }
+.select-option[aria-selected="true"] { font-weight: 500; }
+.select-option .icon { width: 13px; height: 13px; color: var(--accent); opacity: 0; }
+.select-option[aria-selected="true"] .icon { opacity: 1; }
 
 /* ---- Switch ---- */
 .switch { width: 40px; height: 24px; border-radius: var(--r-full); background: var(--line); position: relative; flex-shrink: 0; transition: background var(--dur-fast) var(--ease); }

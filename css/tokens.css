@@ -7,6 +7,8 @@
  * eased out; nothing bounces, nothing flashes.
  */
 :root {
+  color-scheme: light dark; /* native pickers and scrollbars follow the palette */
+
   /* Color — paper, ink, moss */
   --ink: #2b2a26;
   --ink-soft: #6b6a62;
