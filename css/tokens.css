@@ -1,39 +1,40 @@
 /* Work — design tokens
  *
- * Direction: a quiet desk at dusk. Warm paper instead of white, one muted moss
- * green instead of a loud blue, and a soft serif (Fraunces) for the few
- * moments that should feel human — greetings, the clock, group labels.
- * Everything else is a calm humanist sans (DM Sans). Motion is slow and
- * eased out; nothing bounces, nothing flashes.
+ * Direction: a clean, bright desk. Near-white surfaces on a quiet neutral paper, one
+ * green accent, and a single serif (Fraunces) reserved for the one thing it suits:
+ * time. Everything else is DM Sans. Motion answers what you just did (a task is
+ * checked, a row appears, a tab changes); nothing moves on its own.
+ *
+ * Theme is set on <html data-theme="light|dark"> by js/core/theme.js.
  */
 :root {
-  color-scheme: light dark; /* native pickers and scrollbars follow the palette */
+  color-scheme: light;
 
-  /* Color — paper, ink, moss */
-  --ink: #2b2a26;
-  --ink-soft: #6b6a62;
-  --ink-faint: #a09e94;
-  --paper: #f6f3ec;
-  --surface: #fbf9f4;
-  --surface-sunken: #eeeadf;
-  --line: #e4dfd2;
-  --accent: #4a6b58;
-  --accent-ink: #f8f6ef;
-  --accent-wash: #e3e9de;
-  --danger: #b0503a;
-  --danger-wash: #f3e1db;
-  --good: #4a6b58;
-  --rest: #b08a5b; /* breaks: warm sand */
+  /* Color */
+  --ink: #1c1c1a;
+  --ink-soft: #5c5c56;
+  --ink-faint: #8a8a82;
+  --paper: #f7f7f4;
+  --surface: #ffffff;
+  --surface-sunken: #efefea;
+  --line: #e5e5df;
+  --accent: #407a5a;
+  --accent-ink: #ffffff;
+  --accent-wash: #e4f0e8;
+  --danger: #c0452f;
+  --danger-wash: #fbe6e1;
+  --good: #407a5a;
+  --rest: #b98a4e; /* breaks: warm sand */
 
-  --priority-low: #7e9a86;
-  --priority-medium: #b58a33;
-  --priority-high: #b0503a;
+  --priority-low: #6aa383;
+  --priority-medium: #b8862b;
+  --priority-high: #c0452f;
 
-  --focus-ring: #4a6b58;
+  --focus-ring: #407a5a;
 
   /* Type */
   --font: "DM Sans", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
-  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif; /* clocks only */
 
   /* Spacing (4px base) */
   --sp-1: 4px;
@@ -52,9 +53,9 @@
   --r-full: 999px;
 
   /* Shadow — barely there */
-  --shadow-sm: 0 1px 2px rgba(60, 50, 30, 0.05);
-  --shadow-md: 0 8px 24px rgba(60, 50, 30, 0.08);
-  --shadow-lg: 0 24px 64px rgba(60, 50, 30, 0.16);
+  --shadow-sm: 0 1px 2px rgba(30, 30, 25, 0.06);
+  --shadow-md: 0 8px 24px rgba(30, 30, 25, 0.10);
+  --shadow-lg: 0 24px 64px rgba(30, 30, 25, 0.18);
 
   /* Motion — slow in, softer out */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -63,28 +64,34 @@
   --dur-slow: 640ms;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ink: #ebe7dc;
-    --ink-soft: #a7a498;
-    --ink-faint: #6f6d64;
-    --paper: #191814;
-    --surface: #211f1b;
-    --surface-sunken: #272520;
-    --line: #34312a;
-    --accent: #93b39f;
-    --accent-ink: #14130f;
-    --accent-wash: #26302a;
-    --danger: #d98670;
-    --danger-wash: #382420;
-    --good: #93b39f;
-    --rest: #c9a574;
-    --priority-low: #8fae98;
-    --priority-medium: #d0a857;
-    --priority-high: #d98670;
-    --focus-ring: #93b39f;
-    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.5);
-  }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #f1f0ea;
+  --ink-soft: #b7b6ac;
+  --ink-faint: #88877d;
+  --paper: #1a1a18;
+  --surface: #242422;
+  --surface-sunken: #2c2c29;
+  --line: #3a3a35;
+  --accent: #86c09f;
+  --accent-ink: #0f1712;
+  --accent-wash: #25352b;
+  --danger: #ec9783;
+  --danger-wash: #3d2822;
+  --good: #86c09f;
+  --rest: #d3ae7c;
+  --priority-low: #8fc3a5;
+  --priority-medium: #dcb15f;
+  --priority-high: #ec9783;
+  --focus-ring: #86c09f;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+}
+
+/* Crossfade colours when the theme changes (added briefly by theme.js). */
+:root.theme-switching, :root.theme-switching *, :root.theme-switching *::before, :root.theme-switching *::after {
+  transition: background-color 300ms var(--ease), color 300ms var(--ease), border-color 300ms var(--ease), fill 300ms var(--ease), stroke 300ms var(--ease) !important;
 }
 
 * { box-sizing: border-box; }

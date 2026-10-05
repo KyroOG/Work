@@ -15,6 +15,8 @@
   let viewEl = null;
   let tabButtons = {};
   let mini = null;
+  let navIndicator = null;
+  let indicatorPlaced = false;
   const PHASE = { focus: 'Focus', short: 'Short break', long: 'Long break' };
   let active = null;
   let lastTitleSecond = -1;
@@ -27,7 +29,7 @@
     mini.hidden = !show;
     if (!show) return;
     const remaining = f.status === 'running' ? Math.max(0, f.endsAt - Date.now()) : f.remaining;
-    mini.querySelector('.mini-phase').textContent = PHASE[f.phase] + (f.status === 'paused' ? ' · paused' : '');
+    mini.querySelector('.mini-phase').textContent = PHASE[f.phase] + (f.status === 'paused' ? ' (paused)' : '');
     W.dom.setClock(mini.querySelector('.mini-clock'), W.utils.fmtClock(remaining));
     const t = f.taskId && W.store.getTask(f.taskId);
     mini.querySelector('.mini-task').textContent = t ? t.title : 'No task';
@@ -47,7 +49,17 @@
     if (sec === lastTitleSecond) return;
     lastTitleSecond = sec;
     const label = { focus: 'Focus', short: 'Short break', long: 'Long break' }[f.phase];
-    W.title.set('timer', W.utils.fmtClock(remaining) + ' · ' + label);
+    W.title.set('timer', W.utils.fmtClock(remaining) + ' ' + label);
+  }
+
+  function moveIndicator(name) {
+    const btn = tabButtons[name];
+    if (!btn || !navIndicator) return;
+    navIndicator.style.transition = indicatorPlaced ? '' : 'none';
+    navIndicator.style.height = btn.offsetHeight + 'px';
+    navIndicator.style.transform = 'translateY(' + btn.offsetTop + 'px)';
+    if (!indicatorPlaced) void navIndicator.offsetHeight; // commit the first position without animating
+    indicatorPlaced = true;
   }
 
   function mountView(name) {
@@ -62,6 +74,7 @@
       tabButtons[id].classList.toggle('is-active', id === name);
       tabButtons[id].setAttribute('aria-current', id === name ? 'page' : 'false');
     });
+    moveIndicator(name);
     const view = W.views[name];
     if (view) view.mount(page);
     paintMini();
@@ -114,6 +127,7 @@
       h(
         'nav',
         { class: 'nav', 'aria-label': 'Sections' },
+        (navIndicator = h('span', { class: 'nav-indicator', 'aria-hidden': 'true' })),
         TABS.map((t) => {
           const btn = h(
             'button',
@@ -134,12 +148,15 @@
 
   function boot() {
     W.store.init();
+    W.theme.set(W.store.state.settings.theme);
     buildShell();
     W.events.on('route', mountView);
     W.router.init();
     W.timer.init();
     W.alarms.init();
 
+    W.events.on('settings', () => W.theme.set(W.store.state.settings.theme));
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { indicatorPlaced = false; moveIndicator(active); });
     W.events.on('focus', paintMini);
     W.events.on('tasks', paintMini);
     W.events.on('route', paintMini);

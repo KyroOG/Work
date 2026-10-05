@@ -7,13 +7,14 @@
 
   let root = null;
   let quickEl = null;
+  let knownIds = null; // task ids from the previous render, so only genuinely new rows animate in
   let revealDone = false; // true for one render after the Completed group is expanded
 
   function quickAdd() {
     const input = h('input', {
       type: 'text',
       class: 'quickadd-input',
-      placeholder: 'Add a task — try “Report Friday 5pm !high”',
+      placeholder: 'Add a task, like “Report Friday 5pm !high”',
       'aria-label': 'Add a task',
       autocomplete: 'off',
     });
@@ -42,18 +43,25 @@
     if (input) input.focus();
   }
 
-  function taskRow(t, reveal) {
+  function taskRow(t, reveal, isNew) {
     const overdue = !t.done && t.due && t.due < U.dayKey();
     const row = h(
       'li',
-      { class: 'task' + (t.done ? ' is-done' : '') + (overdue ? ' is-overdue' : '') + (reveal ? ' is-revealed' : ''), 'data-id': t.id },
+      { class: 'task' + (t.done ? ' is-done' : '') + (overdue ? ' is-overdue' : '') + (reveal ? ' is-revealed' : '') + (isNew ? ' is-new' : ''), 'data-id': t.id },
       h('button', {
         class: 'task-check',
         type: 'button',
         role: 'checkbox',
         'aria-checked': t.done ? 'true' : 'false',
         'aria-label': t.done ? 'Mark not done' : 'Mark done',
-        onClick: () => W.store.updateTask(t.id, { done: !t.done }),
+        onClick: (e) => {
+          if (t.done) { W.store.updateTask(t.id, { done: false }); return; }
+          if (row.classList.contains('is-completing')) return;
+          // Let the tick and strike-through play before the row moves to Completed.
+          row.classList.add('is-done', 'is-completing');
+          e.currentTarget.setAttribute('aria-checked', 'true');
+          setTimeout(() => W.store.updateTask(t.id, { done: true }), U.reducedMotion() ? 0 : 380);
+        },
       }, W.dom.icon('check')),
       h(
         'div',
@@ -102,7 +110,7 @@
       { class: 'empty-state' },
       W.dom.icon('leaf'),
       h('p', { class: 'empty-title', text: 'Nothing on your list' }),
-      h('p', { class: 'empty-body', text: 'Add a task above whenever you’re ready.' })
+      h('p', { class: 'empty-body', text: 'Add a task above to get started.' })
     );
   }
 
@@ -122,8 +130,8 @@
 
   function stat(num, label, tone) {
     return h('div', { class: 'stat' + (tone ? ' stat-' + tone : '') },
-      h('span', { class: 'stat-num', text: String(num) }),
-      h('span', { class: 'stat-label', text: label })
+      h('span', { class: 'stat-label', text: label }),
+      h('span', { class: 'stat-num', text: String(num) })
     );
   }
 
@@ -174,6 +182,8 @@
     const sorted = A.sortTasks(state.tasks, state.settings.sort);
     const today = U.dayKey();
     const sum = A.daySummary(state.tasks);
+    const fresh = knownIds ? new Set(state.tasks.filter((t) => !knownIds.has(t.id)).map((t) => t.id)) : new Set();
+    knownIds = new Set(state.tasks.map((t) => t.id));
 
     root.appendChild(W.dom.pageHeader({ title: sum.hello, sub: sum.line }));
     if (!quickEl) quickEl = quickAdd();
@@ -201,7 +211,7 @@
             list.appendChild(h('li', { class: 'task-group-label', text: g }));
           }
         }
-        list.appendChild(taskRow(t, t.done && revealDone));
+        list.appendChild(taskRow(t, t.done && revealDone, fresh.has(t.id)));
       });
       revealDone = false;
       main.appendChild(list);
@@ -212,11 +222,13 @@
   function mount(el) {
     root = el;
     quickEl = null;
+    knownIds = null;
     render();
   }
   function unmount() {
     root = null;
     quickEl = null;
+    knownIds = null;
   }
 
   W.events.on('tasks', render);

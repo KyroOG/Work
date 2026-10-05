@@ -30,6 +30,23 @@
       },
     });
   }
+  function themeControl(current) {
+    const modes = [['light', 'Light'], ['dark', 'Dark'], ['system', 'System']];
+    return h(
+      'div',
+      { class: 'seg seg-inline', role: 'radiogroup', 'aria-label': 'Appearance' },
+      modes.map(([val, label]) =>
+        h('button', {
+          type: 'button',
+          class: 'seg-btn' + (val === current ? ' is-active' : ''),
+          role: 'radio',
+          'aria-checked': val === current ? 'true' : 'false',
+          text: label,
+          onClick: () => W.store.setSettings({ theme: val }),
+        })
+      )
+    );
+  }
   function numberField(value, onChange, min, max) {
     return h('input', {
       type: 'number', class: 'field-number', value, min, max,
@@ -81,6 +98,7 @@
     grid.appendChild(
       section(
         'Display',
+        row('Appearance', themeControl(s.theme)),
         row('24-hour clock', toggle(s.clock24, (v) => W.store.setSettings({ clock24: v }), '24-hour clock')),
         row('Your name', h('input', { type: 'text', class: 'field-inline', value: s.name, maxlength: 40, placeholder: 'Optional', onChange: (e) => W.store.setSettings({ name: e.target.value.trim() }) }), 'Used in the daily greeting')
       )

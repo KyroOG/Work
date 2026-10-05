@@ -24,7 +24,7 @@
         'div',
         { class: 'alarm-body', onClick: () => W.alarmEditor.open(a), role: 'button', tabIndex: 0, onKeydown: (e) => { if (e.key === 'Enter') W.alarmEditor.open(a); } },
         h('span', { class: 'alarm-time', text: U.fmtTime(a.time, W.store.state.settings.clock24) }),
-        h('span', { class: 'alarm-meta', text: (a.label ? a.label + ' · ' : '') + dayLetters(a.days) })
+        h('span', { class: 'alarm-meta' }, a.label ? h('span', { class: 'alarm-label', text: a.label }) : null, h('span', { text: dayLetters(a.days) }))
       ),
       h('button', {
         class: 'switch' + (a.enabled ? ' is-on' : ''),
@@ -54,7 +54,7 @@
     const on = alarms.filter((a) => a.enabled).length;
     root.appendChild(W.dom.pageHeader({
       title: 'Alarms',
-      sub: alarms.length ? on + ' of ' + alarms.length + ' on · rings while Work is open' : 'Rings while Work is open',
+      sub: alarms.length ? on + ' of ' + alarms.length + ' on. Alarms ring while Work is open.' : 'Alarms ring while Work is open.',
       action: { label: 'New alarm', key: 'N', onClick: () => W.alarmEditor.open(null) },
     }));
     if (!alarms.length) {

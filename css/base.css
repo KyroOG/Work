@@ -8,9 +8,7 @@ body {
   font-size: 14.5px;
   line-height: 1.5;
   color: var(--ink);
-  background:
-    radial-gradient(1200px 700px at 78% -10%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 60%),
-    var(--paper);
+  background: var(--paper);
   font-feature-settings: "ss01" 0;
   -webkit-font-smoothing: antialiased;
   user-select: none;
@@ -58,10 +56,13 @@ ul { list-style: none; margin: 0; padding: 0; }
 }
 .brand { display: flex; align-items: center; gap: 10px; padding: 0 var(--sp-3); }
 .brand .icon-logo { width: 22px; height: 22px; color: var(--accent); }
-.brand-name { font-family: var(--font-display); font-size: 20px; font-weight: 400; letter-spacing: -0.01em; }
+.brand-name { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
 
-.nav { display: flex; flex-direction: column; gap: 2px; }
+.nav { position: relative; display: flex; flex-direction: column; gap: 2px; }
+.nav-indicator { position: absolute; left: 0; right: 0; top: 0; height: 0; border-radius: var(--r-sm); background: color-mix(in srgb, var(--accent) 12%, transparent); pointer-events: none; transition: transform var(--dur-med) var(--ease), height var(--dur-med) var(--ease); }
 .tab {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -75,7 +76,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .tab .icon { width: 19px; height: 19px; flex-shrink: 0; opacity: 0.8; }
 .tab-label { flex: 1; }
 .tab:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 4%, transparent); }
-.tab.is-active { color: var(--ink); background: color-mix(in srgb, var(--accent) 11%, transparent); }
+.tab.is-active, .tab.is-active:hover { color: var(--ink); background: transparent; }
 .tab.is-active .icon { color: var(--accent); opacity: 1; }
 
 .kbd {
@@ -114,7 +115,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 @keyframes breathe-dot { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
 
 .view { overflow-y: auto; padding: 40px 56px 40px; }
-.page { max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--sp-6); animation: page-in var(--dur-slow) var(--ease) both; }
+.page { max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--sp-6); animation: page-in var(--dur-med) var(--ease) both; }
 /* Fade only (no translate): a moving page briefly adds scroll height and flashes a scrollbar on every tab switch. */
 @keyframes page-in { from { opacity: 0; } to { opacity: 1; } }
 .page[data-view="alarms"] { max-width: 680px; }
@@ -122,7 +123,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .page[data-view="settings"] { max-width: 960px; }
 
 .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--sp-6); }
-.page-title { font-family: var(--font-display); font-size: 40px; font-weight: 350; letter-spacing: -0.02em; line-height: 1.1; }
+.page-title { font-size: 32px; font-weight: 600; letter-spacing: -0.025em; line-height: 1.15; }
 .page-sub { color: var(--ink-soft); margin-top: 8px; font-size: 15.5px; }
 
 /* Immersion: while a focus session runs on the Focus screen, everything else steps back. */

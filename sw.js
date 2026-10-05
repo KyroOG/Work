@@ -2,7 +2,7 @@
  * Cache-first for the app shell; everything here is static and local, so a
  * simple versioned cache is enough. Bump CACHE to force an update.
  */
-const CACHE = 'work-v7';
+const CACHE = 'work-v8';
 const ASSETS = [
   './',
   './index.html',
@@ -15,6 +15,7 @@ const ASSETS = [
   './js/core/utils.js',
   './js/core/events.js',
   './js/core/title.js',
+  './js/core/theme.js',
   './js/core/dates.js',
   './js/core/store.js',
   './js/core/router.js',

@@ -17,6 +17,7 @@
   const TONES = ['chime', 'bell', 'beacon', 'radar'];
   const PHASES = ['focus', 'short', 'long'];
   const SORTS = ['smart', 'priority', 'due', 'manual'];
+  const THEMES = ['light', 'dark', 'system'];
   const MAX_SESSIONS = 3000;
 
   const DEFAULT_SETTINGS = Object.freeze({
@@ -35,6 +36,7 @@
     clock24: false,
     sort: 'smart',
     hideCompleted: false,
+    theme: 'light',
   });
 
   /* ------------------------------------------------------------------ */
@@ -102,6 +104,7 @@
       clock24: bool(s.clock24, d.clock24),
       sort: SORTS.includes(s.sort) ? s.sort : d.sort,
       hideCompleted: bool(s.hideCompleted, d.hideCompleted),
+      theme: THEMES.includes(s.theme) ? s.theme : d.theme,
     };
   }
 

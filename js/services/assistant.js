@@ -83,12 +83,12 @@
     const todayN = open.filter((t) => t.due === today).length;
     const name = W.store.state.settings.name;
     const hello = U.greeting(now.getHours()) + (name ? ', ' + name : '');
-    if (!open.length) return { hello, line: 'Nothing on your list — add something whenever you’re ready.' };
+    if (!open.length) return { hello, line: 'Nothing on your list.' };
     let line;
     if (overdueN && todayN) line = overdueN + ' overdue, ' + U.plural(todayN, 'task') + ' due today.';
     else if (overdueN) line = U.plural(overdueN, 'task') + ' overdue.';
     else if (todayN) line = U.plural(todayN, 'task') + ' due today.';
-    else line = 'Nothing due today — a good day to get ahead.';
+    else line = 'Nothing due today.';
     return { hello, line };
   }
 
