@@ -47,6 +47,37 @@
       )
     );
   }
+  function selectField(label, options, value, onChange) {
+    return W.select.create({ options, value, label, variant: 'field', align: 'end', onChange }).el;
+  }
+  function addSoundFile(e) {
+    const f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!f) return;
+    W.sounds.add(f).then((snd) => W.toast.show({ text: '“' + snd.name + '” added' })).catch((err) => W.toast.show({ text: err.message }));
+  }
+  function fmtSize(b) {
+    return b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+  }
+  function mySoundsSection() {
+    const rows = W.sounds.list().map((snd) =>
+      row(snd.name, h('div', { class: 'row-actions' },
+        h('button', { class: 'btn btn-ghost', type: 'button', text: 'Play', onClick: () => W.audio.preview(snd.id) }),
+        h('button', {
+          class: 'btn btn-ghost btn-danger', type: 'button', text: 'Remove',
+          onClick: () => { W.audio.stopPreview(); W.sounds.remove(snd.id).then(() => W.toast.show({ text: '“' + snd.name + '” removed' })); },
+        })
+      ), fmtSize(snd.size))
+    );
+    const full = W.sounds.list().length >= W.sounds.MAX_COUNT;
+    rows.push(row(
+      'Add a sound',
+      h('label', { class: 'btn btn-ghost file-btn' + (full ? ' is-disabled' : ''), text: 'Choose file' },
+        h('input', { type: 'file', accept: 'audio/*', class: 'file-input', disabled: full, onChange: addSoundFile })),
+      full ? 'You’ve reached ' + W.sounds.MAX_COUNT + ' sounds' : 'MP3, WAV, M4A or OGG · up to 10 MB · stays on this device, not in backups'
+    ));
+    return section('My sounds', ...rows);
+  }
   function numberField(value, onChange, min, max) {
     return h('input', {
       type: 'number', class: 'field-number', value, min, max,
@@ -76,10 +107,16 @@
       )
     );
 
+    const vol = h('input', {
+      type: 'range', class: 'slider', min: 0, max: 100, step: 5, value: Math.round(s.volume * 100), 'aria-label': 'Volume',
+      onChange: (e) => { W.store.setSettings({ volume: Number(e.target.value) / 100 }); W.audio.preview('chime'); },
+    });
     grid.appendChild(
       section(
         'Sound & notifications',
-        row('Sounds', toggle(s.timerSound, (v) => W.store.setSettings({ timerSound: v }), 'Sounds')),
+        row('Sounds', toggle(s.timerSound, (v) => W.store.setSettings({ timerSound: v }), 'Sounds'), 'Focus and break chimes'),
+        row('Volume', vol),
+        row('Timer end sound', selectField('Timer end sound', W.audio.soundOptions(s.timerTone, true), s.timerTone, (v) => { W.store.setSettings({ timerTone: v }); W.audio.preview(v); })),
         row(
           'Notifications',
           toggle(s.notifications, async (v) => {
@@ -94,6 +131,18 @@
         )
       )
     );
+
+    grid.appendChild(
+      section(
+        'Alarms',
+        row('Default sound', selectField('Default alarm sound', W.audio.soundOptions(s.tone, false), s.tone, (v) => { W.store.setSettings({ tone: v }); W.audio.preview(v); }), 'For new alarms'),
+        row('Default snooze', selectField('Default snooze', W.store.SNOOZES.map((n) => [n, n + ' min']), s.snooze, (v) => W.store.setSettings({ snooze: Number(v) })), 'For new alarms'),
+        row('Stop ringing after', selectField('Stop ringing after', W.store.RING_LIMITS.map((n) => [n, n ? n + ' min' : 'Never']), s.ringLimit, (v) => W.store.setSettings({ ringLimit: Number(v) })), 'If nobody answers'),
+        row('Gentle wake-up', toggle(s.fadeIn, (v) => W.store.setSettings({ fadeIn: v }), 'Gentle wake-up'), 'Volume rises over 20 seconds')
+      )
+    );
+
+    grid.appendChild(mySoundsSection());
 
     grid.appendChild(
       section(
@@ -160,6 +209,7 @@
   }
 
   W.events.on('settings', render);
+  W.events.on('sounds', render);
 
   W.views = W.views || {};
   W.views.settings = { mount, unmount, render };

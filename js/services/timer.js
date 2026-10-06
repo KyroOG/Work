@@ -104,7 +104,7 @@
     if (f.phase === 'focus') logPartial(true);
     sessionStart = 0;
     W.wake.release();
-    W.audio.play('done');
+    W.audio.timerEnd();
     const label = f.phase === 'focus' ? 'Focus session complete' : 'Break’s over';
     W.notify.send(label, { body: f.phase === 'focus' ? 'Time for a break.' : 'Ready for another round?' });
     W.events.emit('timer:complete', f.phase);

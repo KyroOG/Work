@@ -6,11 +6,11 @@
   const DAYS = [
     ['S', 0], ['M', 1], ['T', 2], ['W', 3], ['T', 4], ['F', 5], ['S', 6],
   ];
-  const SNOOZE = [5, 10, 15, 30];
 
   function open(alarm) {
     const isNew = !alarm;
-    const draft = Object.assign({ time: '07:00', label: '', days: [], sound: 'chime', snooze: 10 }, alarm);
+    const st = W.store.state.settings;
+    const draft = Object.assign({ time: '07:00', label: '', days: [], sound: st.tone, snooze: st.snooze }, alarm);
 
     const timeInput = h('input', { type: 'time', class: 'field-time-lg', value: draft.time, 'aria-label': 'Alarm time', required: true });
     const labelInput = h('input', { type: 'text', class: 'field-title', placeholder: 'Label (optional)', maxlength: 60, value: draft.label });
@@ -36,30 +36,36 @@
     );
 
     let sound = draft.sound;
-    const soundGroup = h(
-      'div',
-      { class: 'seg', role: 'radiogroup', 'aria-label': 'Sound' },
-      W.audio.TONES.map((t) =>
-        h('button', {
-          type: 'button',
-          class: 'seg-btn' + (sound === t.id ? ' is-active' : ''),
-          role: 'radio',
-          'aria-checked': sound === t.id ? 'true' : 'false',
-          text: t.name,
-          onClick: (e) => {
-            sound = t.id;
-            W.audio.preview(t.id);
-            Array.from(soundGroup.children).forEach((c) => {
-              c.classList.toggle('is-active', c === e.currentTarget);
-              c.setAttribute('aria-checked', c === e.currentTarget ? 'true' : 'false');
-            });
-          },
-        })
-      )
-    );
+    const soundRow = h('div', { class: 'sound-row' });
+    function buildSound() {
+      const sel = W.select.create({
+        options: W.audio.soundOptions(sound, false),
+        value: sound,
+        label: 'Sound',
+        variant: 'field',
+        onChange: (v) => { sound = v; W.audio.preview(v); },
+      });
+      W.dom.clear(soundRow);
+      soundRow.appendChild(sel.el);
+      soundRow.appendChild(h('button', { type: 'button', class: 'btn btn-ghost', text: 'Play', onClick: () => W.audio.preview(sound) }));
+      soundRow.appendChild(
+        h('label', { class: 'btn btn-ghost file-btn', text: 'Add file…' },
+          h('input', {
+            type: 'file', accept: 'audio/*', class: 'file-input',
+            onChange: (e) => {
+              const f = e.target.files && e.target.files[0];
+              e.target.value = '';
+              if (!f) return;
+              W.sounds.add(f).then((snd) => { sound = snd.id; buildSound(); W.audio.preview(sound); })
+                .catch((err) => W.toast.show({ text: err.message }));
+            },
+          }))
+      );
+    }
+    buildSound();
 
     const snoozeSelect = W.select.create({
-      options: SNOOZE.map((n) => [n, n + ' min']),
+      options: W.store.SNOOZES.map((n) => [n, n + ' min']),
       value: draft.snooze,
       label: 'Snooze length',
       variant: 'field',
@@ -89,7 +95,7 @@
       h('div', { class: 'time-picker-row' }, timeInput),
       labelInput,
       h('div', { class: 'field-label' }, h('span', { text: 'Repeat' }), dayGroup),
-      h('div', { class: 'field-label' }, h('span', { text: 'Sound' }), soundGroup),
+      h('div', { class: 'field-label' }, h('span', { text: 'Sound' }), soundRow),
       h('div', { class: 'field-label field-label-inline' }, h('span', { text: 'Snooze' }), snoozeSelect.el),
       h(
         'div',
@@ -102,7 +108,7 @@
       )
     );
 
-    W.sheet.open({ title: isNew ? 'New alarm' : 'Edit alarm', body });
+    W.sheet.open({ title: isNew ? 'New alarm' : 'Edit alarm', body, onClose: () => W.audio.stopPreview() });
   }
 
   W.alarmEditor = { open };

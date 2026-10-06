@@ -8,6 +8,7 @@
   let root = null;
   let quickEl = null;
   let knownIds = null; // task ids from the previous render, so only genuinely new rows animate in
+  let landedId = null; // the task that just finished its exit animation; it settles into Completed
   let revealDone = false; // true for one render after the Completed group is expanded
 
   function quickAdd() {
@@ -43,11 +44,11 @@
     if (input) input.focus();
   }
 
-  function taskRow(t, reveal, isNew) {
+  function taskRow(t, reveal, isNew, landed) {
     const overdue = !t.done && t.due && t.due < U.dayKey();
     const row = h(
       'li',
-      { class: 'task' + (t.done ? ' is-done' : '') + (overdue ? ' is-overdue' : '') + (reveal ? ' is-revealed' : '') + (isNew ? ' is-new' : ''), 'data-id': t.id },
+      { class: 'task' + (t.done ? ' is-done' : '') + (overdue ? ' is-overdue' : '') + (reveal ? ' is-revealed' : '') + (isNew ? ' is-new' : '') + (landed ? ' is-landed' : ''), 'data-id': t.id },
       h('button', {
         class: 'task-check',
         type: 'button',
@@ -57,16 +58,25 @@
         onClick: (e) => {
           if (t.done) { W.store.updateTask(t.id, { done: false }); return; }
           if (row.classList.contains('is-completing')) return;
-          // Let the tick and strike-through play before the row moves to Completed.
+          // 1) tick + strike drawn across the title  2) a short beat so it registers
+          // 3) the row folds away  4) it lands under Completed.
           row.classList.add('is-done', 'is-completing');
           e.currentTarget.setAttribute('aria-checked', 'true');
-          setTimeout(() => W.store.updateTask(t.id, { done: true }), U.reducedMotion() ? 0 : 380);
+          const finish = () => { landedId = t.id; W.store.updateTask(t.id, { done: true }); };
+          if (U.reducedMotion()) { finish(); return; }
+          setTimeout(() => {
+            row.style.height = row.offsetHeight + 'px';
+            void row.offsetHeight;
+            row.classList.add('is-leaving');
+            row.style.height = '0px';
+            setTimeout(finish, 420);
+          }, 950);
         },
       }, W.dom.icon('check')),
       h(
         'div',
         { class: 'task-body', onClick: () => W.taskEditor.open(t), role: 'button', tabIndex: 0, onKeydown: (e) => { if (e.key === 'Enter') W.taskEditor.open(t); } },
-        h('p', { class: 'task-title', text: t.title }),
+        h('p', { class: 'task-title' }, h('span', { class: 'task-title-text', text: t.title })),
         t.notes ? h('p', { class: 'task-notes', text: t.notes }) : null,
         h('div', { class: 'task-meta' },
           t.priority !== 'none' ? h('span', { class: 'chip chip-' + t.priority, text: t.priority }) : null,
@@ -211,9 +221,10 @@
             list.appendChild(h('li', { class: 'task-group-label', text: g }));
           }
         }
-        list.appendChild(taskRow(t, t.done && revealDone, fresh.has(t.id)));
+        list.appendChild(taskRow(t, t.done && revealDone, fresh.has(t.id), t.id === landedId && t.done));
       });
       revealDone = false;
+      landedId = null;
       main.appendChild(list);
     }
     root.appendChild(h('div', { class: 'tasks-layout' }, main, state.tasks.length ? rail(state, today) : null));

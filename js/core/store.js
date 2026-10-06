@@ -14,7 +14,11 @@
   const SCHEMA = 1;
 
   const PRIORITIES = ['none', 'low', 'medium', 'high'];
-  const TONES = ['chime', 'bell', 'beacon', 'radar'];
+  const TONES = ['chime', 'bell', 'beacon', 'radar', 'marimba', 'harp', 'crystal', 'pulse', 'dawn', 'digital'];
+  const SNOOZES = [5, 10, 15, 30];
+  const RING_LIMITS = [0, 1, 2, 5, 10]; // minutes before an unanswered alarm stops itself; 0 = never
+  const isCustomSound = (id) => typeof id === 'string' && /^custom:[\w-]+$/.test(id);
+  const validSound = (id) => TONES.includes(id) || isCustomSound(id);
   const PHASES = ['focus', 'short', 'long'];
   const SORTS = ['smart', 'priority', 'due', 'manual'];
   const THEMES = ['light', 'dark', 'system'];
@@ -32,6 +36,10 @@
     timerSound: true,
     volume: 0.7,
     tone: 'chime',
+    timerTone: 'done',
+    snooze: 10,
+    ringLimit: 0,
+    fadeIn: false,
     notifications: false,
     clock24: false,
     sort: 'smart',
@@ -70,8 +78,8 @@
       label: String(a.label || '').slice(0, 60),
       days: Array.from(new Set(days)).sort((x, y) => x - y),
       enabled: a.enabled !== false,
-      sound: TONES.includes(a.sound) ? a.sound : 'chime',
-      snooze: [5, 10, 15, 30].includes(Number(a.snooze)) ? Number(a.snooze) : 10,
+      sound: validSound(a.sound) ? a.sound : 'chime',
+      snooze: SNOOZES.includes(Number(a.snooze)) ? Number(a.snooze) : 10,
       armedAt: Number(a.armedAt) || 0,
       lastFired: Number(a.lastFired) || 0,
       snoozeUntil: Number(a.snoozeUntil) || 0,
@@ -99,7 +107,11 @@
       keepAwake: bool(s.keepAwake, d.keepAwake),
       timerSound: bool(s.timerSound, d.timerSound),
       volume: Number.isFinite(vol) ? U.clamp(vol, 0, 1) : d.volume,
-      tone: TONES.includes(s.tone) ? s.tone : d.tone,
+      tone: validSound(s.tone) ? s.tone : d.tone,
+      timerTone: s.timerTone === 'done' || validSound(s.timerTone) ? s.timerTone : d.timerTone,
+      snooze: SNOOZES.includes(Number(s.snooze)) ? Number(s.snooze) : d.snooze,
+      ringLimit: RING_LIMITS.includes(Number(s.ringLimit)) ? Number(s.ringLimit) : d.ringLimit,
+      fadeIn: bool(s.fadeIn, d.fadeIn),
       notifications: bool(s.notifications, d.notifications),
       clock24: bool(s.clock24, d.clock24),
       sort: SORTS.includes(s.sort) ? s.sort : d.sort,
@@ -503,7 +515,7 @@
 
   W.store = {
     get state() { return state; },
-    KEY, SCHEMA, PRIORITIES, TONES, PHASES, SORTS, DEFAULT_SETTINGS,
+    KEY, SCHEMA, PRIORITIES, TONES, SNOOZES, RING_LIMITS, PHASES, SORTS, DEFAULT_SETTINGS,
     init, flush, syncFromDisk, exportData, importData, reset,
     getTask, addTask, updateTask, deleteTask, restoreTask, restoreTasks, clearCompleted, reorderTasks,
     getAlarm, addAlarm, updateAlarm, patchAlarm, deleteAlarm, restoreAlarm,

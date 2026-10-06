@@ -148,6 +148,7 @@
 
   function boot() {
     W.store.init();
+    W.sounds.init();
     W.theme.set(W.store.state.settings.theme);
     buildShell();
     W.events.on('route', mountView);

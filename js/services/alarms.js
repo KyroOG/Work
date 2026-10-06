@@ -10,6 +10,7 @@
   const store = W.store;
   let poll = null;
   let ringing = null; // the alarm object currently sounding, or null
+  let ringSince = 0;
 
   function isRingingNow() {
     return ringing;
@@ -20,7 +21,11 @@
   }
 
   function checkOnce() {
-    if (ringing) return;
+    if (ringing) {
+      const limit = store.state.settings.ringLimit;
+      if (limit && Date.now() - ringSince >= limit * 60000) dismiss(); // nobody answered
+      return;
+    }
     const now = new Date();
     const hm = U.hhmm(now);
     const minuteStamp = Math.floor(now.getTime() / 60000);
@@ -41,6 +46,7 @@
 
   function fire(alarm) {
     ringing = alarm;
+    ringSince = Date.now();
     store.patchAlarm(alarm.id, { lastFired: Date.now(), snoozeUntil: 0 });
     // One-off alarms turn themselves off once they've rung.
     if (alarm.days.length === 0) store.patchAlarm(alarm.id, { enabled: false });
