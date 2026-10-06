@@ -138,7 +138,10 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
+  const VERSION = '1.0.0';
+
   W.utils = {
+    VERSION,
     DAY_MS, MONTHS, MONTHS_SHORT, DAYS, DAYS_SHORT,
     pad, clamp, uid, plural,
     dayKey, parseDayKey, isValidDayKey, addDays, diffDays,

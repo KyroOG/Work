@@ -158,6 +158,7 @@
         'Backup',
         row('Export data', h('button', { class: 'btn btn-ghost', type: 'button', text: 'Export', onClick: doExport })),
         row('Import data', h('label', { class: 'btn btn-ghost file-btn', text: 'Import' }, h('input', { type: 'file', accept: 'application/json', class: 'file-input', onChange: doImport }))),
+        row('Version', h('span', { class: 'settings-row-hint', text: 'Work ' + W.utils.VERSION }), 'Everything stays on this device'),
         row('Reset app', h('button', { class: 'btn btn-ghost btn-danger', type: 'button', text: 'Reset', onClick: doReset }), 'Deletes everything on this device')
       )
     );

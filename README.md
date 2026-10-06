@@ -1,36 +1,63 @@
 # Work
 
-Tasks, a Pomodoro focus timer, and alarms — in one calm, Apple-style app.
-No build step, no dependencies, no backend. Just open `index.html`.
+Tasks, a Pomodoro focus timer and alarms, in one calm app. No account, no cloud, no tracking:
+everything is stored on your own computer.
+
+**Use it:** https://kyroog.github.io/Work/ (works in any modern browser, installable as an app from Chrome or Edge)
+**Windows app:** download `Work-Setup-x.y.z.exe` from the [Releases](../../releases) page.
+
+## What it does
+
+- **Tasks:** type naturally ("Report Friday 5pm !high"), sort by priority or due date, collapse completed ones.
+- **Focus:** a Pomodoro timer tied to your tasks, with breaks and round tracking.
+- **Alarms:** repeat days, snooze, ten built-in sounds, or your own audio files.
+- **Themes:** light, dark, or follow the system.
+
+Keyboard: `1`-`4` switch tabs, `N` or `/` adds a task, `Space` starts or pauses the timer.
+
+> Alarms only ring while Work is open. Keep the window open (minimised is fine in the desktop app).
+
+## Privacy
+
+Tasks, alarms and settings live in your browser or app storage on this device. Custom alarm sounds stay on this
+device too. Nothing is sent anywhere. Use **Settings > Backup** to export or import your data.
+
+## Run it locally
+
+No build step. Serve the folder over http(s), for example `npx serve`, and open it.
+
+## Build the Windows installer
+
+Automatic: push a version tag and GitHub builds and publishes the installer.
+
+```
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Manual, on a Windows PC with Node.js:
+
+```
+cd desktop
+npm install
+npm run dist
+```
+
+The installer appears in `desktop/dist/`. It is unsigned, so Windows SmartScreen may show a warning the first
+time ("More info" > "Run anyway").
 
 ## Structure
 
 ```
-index.html
-manifest.json       PWA metadata
-sw.js                offline caching (service worker)
-css/
-  tokens.css         colors, type, spacing, motion
-  base.css           reset + app shell layout
-  icons.css           SVG icon set
-  components.css     every UI component
-js/
-  core/              store, router, date parsing, events, utils
-  services/          timer engine, alarm engine, audio, notifications, wake lock
-  ui/                reusable sheet/toast/ring/editor components
-  views/             the four screens: tasks, focus, alarms, settings
-  app.js             boots everything, wires the tab bar
-icons/               app icons (192/512, regular + maskable)
+index.html, manifest.json, sw.js   app shell, PWA, offline cache
+css/                               tokens, base, icons, components
+js/core/                           store, router, date parsing, theme, utils
+js/services/                       timer, alarms, audio, custom sounds, notifications
+js/ui/                             sheet, toast, select, time field, editors
+js/views/                          tasks, focus, alarms, settings
+desktop/                           Electron wrapper for the Windows installer
 ```
 
-## Running it
+## License
 
-Just open `index.html` in a browser — everything runs client-side with
-`localStorage`. For the install-as-app (PWA) features to work (service
-worker, notifications), serve it over `http(s)`, e.g. GitHub Pages, or
-`npx serve` locally.
-
-## Deploying on GitHub Pages
-
-Settings → Pages → Source: *Deploy from a branch* → Branch: `main`, folder
-`/ (root)` → Save. It'll be live at `https://<username>.github.io/<repo>/`.
+MIT. Fonts (DM Sans, Fraunces) are under the SIL Open Font License.

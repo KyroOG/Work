@@ -12,7 +12,7 @@
     const st = W.store.state.settings;
     const draft = Object.assign({ time: '07:00', label: '', days: [], sound: st.tone, snooze: st.snooze }, alarm);
 
-    const timeInput = h('input', { type: 'time', class: 'field-time-lg', value: draft.time, 'aria-label': 'Alarm time', required: true });
+    const timeInput = W.timeField.create({ value: draft.time, label: 'Alarm time', large: true });
     const labelInput = h('input', { type: 'text', class: 'field-title', placeholder: 'Label (optional)', maxlength: 60, value: draft.label });
 
     let days = draft.days.slice();
@@ -92,7 +92,7 @@
       'form',
       { class: 'alarm-editor', onSubmit: (e) => { e.preventDefault(); save(); } },
       h('h2', { class: 'sheet-title', text: isNew ? 'New alarm' : 'Edit alarm' }),
-      h('div', { class: 'time-picker-row' }, timeInput),
+      h('div', { class: 'time-picker-row' }, timeInput.el),
       labelInput,
       h('div', { class: 'field-label' }, h('span', { text: 'Repeat' }), dayGroup),
       h('div', { class: 'field-label' }, h('span', { text: 'Sound' }), soundRow),

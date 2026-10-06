@@ -1,0 +1,27 @@
+{
+  "name": "work",
+  "productName": "Work",
+  "version": "1.0.0",
+  "description": "Tasks, focus timer and alarms in one calm place.",
+  "author": "KyroOG",
+  "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "prepare-app": "node scripts/copy-app.js",
+    "start": "npm run prepare-app && electron .",
+    "dist": "npm run prepare-app && electron-builder --win nsis --publish never"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.kyroog.work",
+    "productName": "Work",
+    "files": ["main.js", "app/**/*"],
+    "icon": "app/icons/icon-512.png",
+    "directories": { "output": "dist" },
+    "win": { "target": "nsis", "artifactName": "Work-Setup-${version}.${ext}" },
+    "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true, "createDesktopShortcut": true, "createStartMenuShortcut": true }
+  }
+}

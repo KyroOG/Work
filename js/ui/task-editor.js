@@ -24,7 +24,7 @@
     const titleInput = h('input', { class: 'field-title', type: 'text', value: draft.title, placeholder: 'Task name', maxlength: 300, 'aria-label': 'Task name' });
     const notesInput = h('textarea', { class: 'field-notes', placeholder: 'Notes (optional)', rows: 3, 'aria-label': 'Notes', text: draft.notes });
     const dateInput = h('input', { type: 'date', class: 'field-date', value: draft.due || '', 'aria-label': 'Due date' });
-    const timeInput = h('input', { type: 'time', class: 'field-time', value: draft.time || '', 'aria-label': 'Due time', disabled: !draft.due });
+    const timeInput = W.timeField.create({ value: draft.time || '', label: 'Due time', disabled: !draft.due });
     const estInput = h('input', { type: 'number', class: 'field-estimate', min: 0, max: 24, value: draft.estimate || '', placeholder: '0', 'aria-label': 'Estimated pomodoros' });
 
     dateInput.addEventListener('change', () => {
@@ -94,9 +94,9 @@
           h('span', { text: 'Due date' }),
           dateInput
         ),
-        h('label', { class: 'field-label' },
+        h('div', { class: 'field-label' },
           h('span', { text: 'Time' }),
-          timeInput
+          timeInput.el
         )
       ),
       h('div', { class: 'field-label' }, h('span', { text: 'Priority' }), priorityGroup),
