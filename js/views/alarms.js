@@ -43,7 +43,7 @@
       { class: 'empty-state' },
       W.dom.icon('bell'),
       h('p', { class: 'empty-title', text: 'No alarms yet' }),
-      h('p', { class: 'empty-body', text: 'Press N to add one. It rings while Work is open.' })
+      h('p', { class: 'empty-body', text: 'Press N to add one. It rings while Work is running.' })
     );
   }
 

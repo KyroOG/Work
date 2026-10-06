@@ -15,7 +15,7 @@ everything is stored on your own computer.
 
 Keyboard: `1`-`4` switch tabs, `N` or `/` adds a task, `Space` starts or pauses the timer.
 
-> Alarms only ring while Work is open. Keep the window open (minimised is fine in the desktop app).
+> In the browser, alarms only ring while the tab is open. The Windows app lives in the tray and can start with Windows, so alarms ring even with the window closed (the PC must be awake).
 
 ## Privacy
 

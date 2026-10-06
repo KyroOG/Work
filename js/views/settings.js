@@ -4,6 +4,7 @@
   const h = W.dom.h;
 
   let root = null;
+  let desktopPrefs = null; // only exists inside the Windows app
 
   function section(title, ...children) {
     return h('section', { class: 'settings-section' }, h('h2', { class: 'settings-heading', text: title }), ...children);
@@ -144,6 +145,17 @@
 
     grid.appendChild(mySoundsSection());
 
+    if (window.workDesktop && desktopPrefs) {
+      const set = (patch) => window.workDesktop.set(patch).then((p) => { desktopPrefs = p; render(); });
+      grid.appendChild(
+        section(
+          'Desktop app',
+          row('Launch when Windows starts', toggle(desktopPrefs.launchAtStartup, (v) => set({ launchAtStartup: v }), 'Launch when Windows starts'), 'Opens quietly in the tray'),
+          row('Keep running in the tray', toggle(desktopPrefs.runInTray, (v) => set({ runInTray: v }), 'Keep running in the tray'), 'Closing the window keeps alarms ringing')
+        )
+      );
+    }
+
     grid.appendChild(
       section(
         'Display',
@@ -204,6 +216,7 @@
   function mount(el) {
     root = el;
     render();
+    if (window.workDesktop) window.workDesktop.get().then((p) => { desktopPrefs = p; render(); }).catch(() => {});
   }
   function unmount() {
     root = null;

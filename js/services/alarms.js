@@ -53,6 +53,7 @@
     W.audio.startRing(alarm.sound);
     W.title.set('alarm', (alarm.label || 'Alarm') + ' — Work');
     W.notify.send(alarm.label || 'Alarm', { body: U.fmtTime(alarm.time, store.state.settings.clock24), requireInteraction: true });
+    if (window.workDesktop) window.workDesktop.alarmRinging(); // surface the window if it's in the tray
     W.events.emit('alarm:ring', alarm);
   }
 

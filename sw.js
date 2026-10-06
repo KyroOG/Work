@@ -2,7 +2,7 @@
  * Cache-first for the app shell; everything here is static and local, so a
  * simple versioned cache is enough. Bump CACHE to force an update.
  */
-const CACHE = 'work-v11';
+const CACHE = 'work-v12';
 const ASSETS = [
   './',
   './index.html',

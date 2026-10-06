@@ -18,7 +18,7 @@
   "build": {
     "appId": "com.kyroog.work",
     "productName": "Work",
-    "files": ["main.js", "app/**/*"],
+    "files": ["main.js", "preload.js", "app/**/*"],
     "icon": "app/icons/icon-512.png",
     "directories": { "output": "dist" },
     "win": { "target": "nsis", "artifactName": "Work-Setup-${version}.${ext}" },
