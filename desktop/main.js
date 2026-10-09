@@ -61,6 +61,7 @@ function createWindow(startHidden) {
       contextIsolation: true,
       backgroundThrottling: false, // keep the timer and alarms ticking while hidden
       spellcheck: false,
+      zoomFactor: 0.9,
     },
   });
   Menu.setApplicationMenu(null);
@@ -113,6 +114,12 @@ ipcMain.handle('desktop:set', (_e, patch) => {
   applyStartup();
   if (tray) tray.setContextMenu(buildTrayMenu());
   return Object.assign({}, prefs);
+});
+ipcMain.handle('desktop:zoom', (_e, f) => {
+  f = Number(f);
+  if (!win || !(f >= 0.5 && f <= 2)) return;
+  win.webContents.setZoomFactor(f);
+  win.setMinimumSize(Math.round(960 * f), Math.round(600 * f));
 });
 // An alarm is ringing: bring the window to the front so it can be dismissed.
 ipcMain.on('desktop:alarm', () => {

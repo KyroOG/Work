@@ -69,8 +69,8 @@
             void row.offsetHeight;
             row.classList.add('is-leaving');
             row.style.height = '0px';
-            setTimeout(finish, 420);
-          }, 950);
+            setTimeout(finish, 260);
+          }, 500);
         },
       }, W.dom.icon('check')),
       h(

@@ -19,7 +19,6 @@
   let indicatorPlaced = false;
   const PHASE = { focus: 'Focus', short: 'Short break', long: 'Long break' };
   let active = null;
-  let lastTitleSecond = -1;
 
   function paintMini() {
     if (!mini) return;
@@ -35,21 +34,6 @@
     mini.querySelector('.mini-task').textContent = t ? t.title : 'No task';
     mini.querySelector('.mini-bar').style.width = (f.duration ? (1 - remaining / f.duration) * 100 : 0).toFixed(1) + '%';
     mini.classList.toggle('is-running', f.status === 'running');
-  }
-
-  function paintTitle() {
-    const f = W.store.state.focus;
-    if (f.status !== 'running') {
-      W.title.clear('timer');
-      lastTitleSecond = -1;
-      return;
-    }
-    const remaining = Math.max(0, f.endsAt - Date.now());
-    const sec = Math.ceil(remaining / 1000);
-    if (sec === lastTitleSecond) return;
-    lastTitleSecond = sec;
-    const label = { focus: 'Focus', short: 'Short break', long: 'Long break' }[f.phase];
-    W.title.set('timer', W.utils.fmtClock(remaining) + ' ' + label);
   }
 
   function moveIndicator(name) {
@@ -146,24 +130,31 @@
     document.body.appendChild(h('div', { class: 'app' }, sidebar, viewEl));
   }
 
+  let lastScale = 0;
+  function applyScale() {
+    const k = W.store.state.settings.uiScale;
+    if (k === lastScale || !(window.workDesktop && window.workDesktop.setZoom)) return;
+    lastScale = k;
+    window.workDesktop.setZoom(k);
+  }
+
   function boot() {
     W.store.init();
     W.sounds.init();
     W.theme.set(W.store.state.settings.theme);
+    applyScale();
     buildShell();
     W.events.on('route', mountView);
     W.router.init();
     W.timer.init();
     W.alarms.init();
 
-    W.events.on('settings', () => W.theme.set(W.store.state.settings.theme));
+    W.events.on('settings', () => { W.theme.set(W.store.state.settings.theme); applyScale(); });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { indicatorPlaced = false; moveIndicator(active); });
     W.events.on('focus', paintMini);
     W.events.on('tasks', paintMini);
     W.events.on('route', paintMini);
     document.addEventListener('keydown', onKey);
-    W.events.on('focus', paintTitle);
-    W.events.on('timer:tick', paintTitle);
     W.events.on('timer:tick', paintMini);
     document.addEventListener('pointerdown', () => W.audio.unlock(), { once: true, passive: true });
 

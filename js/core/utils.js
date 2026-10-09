@@ -138,7 +138,7 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  const VERSION = '1.0.0';
+  const VERSION = '1.1.0';
 
   W.utils = {
     VERSION,

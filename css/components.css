@@ -117,17 +117,17 @@
   background-size: 0% 1.5px;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
-  transition: background-size 640ms cubic-bezier(0.65, 0, 0.35, 1), color 640ms var(--ease);
+  transition: background-size 300ms cubic-bezier(0.65, 0, 0.35, 1), color 300ms var(--ease);
 }
 .task.is-done .task-title-text { color: var(--ink-faint); background-size: 100% 1.5px; }
-.task-notes, .task-meta { transition: opacity 640ms var(--ease); }
+.task-notes, .task-meta { transition: opacity 300ms var(--ease); }
 .task.is-completing .task-notes, .task.is-completing .task-meta, .task.is-completing .task-focus { opacity: 0.45; }
 .task.is-completing .task-check { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-.task.is-leaving { overflow: hidden; opacity: 0; padding-top: 0; padding-bottom: 0; transition: height 420ms var(--ease), padding 420ms var(--ease), opacity 300ms var(--ease); }
+.task.is-leaving { overflow: hidden; opacity: 0; padding-top: 0; padding-bottom: 0; transition: height 260ms var(--ease), padding 260ms var(--ease), opacity 200ms var(--ease); }
 .task.is-leaving::after { opacity: 0; }
-.task.is-landed { animation: task-land 700ms var(--ease) both; }
+.task.is-landed { animation: task-land 450ms var(--ease) both; }
 @keyframes task-land { from { opacity: 0; transform: translateY(-10px); background: color-mix(in srgb, var(--accent) 12%, transparent); } 60% { background: color-mix(in srgb, var(--accent) 8%, transparent); } to { opacity: 1; transform: none; background: transparent; } }
-.task.is-completing .task-check { animation: check-pop 480ms var(--ease); }
+.task.is-completing .task-check { animation: check-pop 280ms var(--ease); }
 @keyframes check-pop { 0% { transform: scale(1); } 40% { transform: scale(1.14); } 100% { transform: scale(1); } }
 .task.is-new { animation: task-enter var(--dur-med) var(--ease) both; }
 @keyframes task-enter { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
@@ -361,13 +361,13 @@
 .time-field:hover { border-color: var(--line); }
 .time-field:focus-within { border-color: var(--accent); background: var(--surface); }
 .time-field.is-disabled { opacity: 0.45; pointer-events: none; }
-.time-field .tf-seg, .time-field .tf-seg:hover, .time-field .tf-seg:focus { width: 2.1ch; padding: 4px 0; border: 0; border-radius: 6px; background: transparent; text-align: center; font-size: 14px; font-variant-numeric: lining-nums tabular-nums; }
+.time-field .tf-seg, .time-field .tf-seg:hover, .time-field .tf-seg:focus { width: 2.3ch; padding: 4px 0; border: 0; border-radius: 6px; background: transparent; text-align: center; font-size: 15px; font-variant-numeric: lining-nums tabular-nums; }
 .time-field .tf-seg:focus { background: var(--accent-wash); }
 .time-field .tf-seg::placeholder { color: var(--ink-faint); }
 .tf-colon { color: var(--ink-faint); }
 .tf-ampm { margin-left: 6px; padding: 3px 9px; border-radius: var(--r-full); background: var(--accent-wash); color: var(--accent); font-size: 12px; font-weight: 600; letter-spacing: 0.02em; }
 .tf-ampm:hover { background: color-mix(in srgb, var(--accent) 22%, var(--surface)); }
 .time-field.is-large { background: transparent; border-color: transparent; padding: 0; gap: 4px; }
-.time-field.is-large .tf-seg, .time-field.is-large .tf-seg:hover, .time-field.is-large .tf-seg:focus { width: 1.25ch; font-family: var(--font-display); font-size: 56px; font-weight: 300; padding: 2px 6px; border-radius: 12px; }
-.time-field.is-large .tf-colon { font-family: var(--font-display); font-size: 48px; font-weight: 300; position: relative; top: -4px; }
-.time-field.is-large .tf-ampm { margin-left: 12px; padding: 6px 14px; font-size: 16px; align-self: center; }
+.time-field.is-large .tf-seg, .time-field.is-large .tf-seg:hover, .time-field.is-large .tf-seg:focus { width: 2.2ch; font-family: var(--font-display); font-size: 72px; font-weight: 300; line-height: 1.1; padding: 2px 0; border-radius: 12px; }
+.time-field.is-large .tf-colon { font-family: var(--font-display); font-size: 60px; font-weight: 300; position: relative; top: -6px; }
+.time-field.is-large .tf-ampm { margin-left: 12px; padding: 8px 16px; font-size: 18px; align-self: center; }

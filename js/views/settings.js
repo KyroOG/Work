@@ -160,6 +160,9 @@
       section(
         'Display',
         row('Appearance', themeControl(s.theme)),
+        ...(window.workDesktop
+          ? [row('Interface size', selectField('Interface size', W.store.SCALES.map((n) => [n, Math.round(n * 100) + '%']), s.uiScale, (v) => W.store.setSettings({ uiScale: Number(v) })), 'Size of the whole app')]
+          : []),
         row('24-hour clock', toggle(s.clock24, (v) => W.store.setSettings({ clock24: v }), '24-hour clock')),
         row('Your name', h('input', { type: 'text', class: 'field-inline', value: s.name, maxlength: 40, placeholder: 'Optional', onChange: (e) => W.store.setSettings({ name: e.target.value.trim() }) }), 'Used in the daily greeting')
       )

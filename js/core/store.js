@@ -16,6 +16,7 @@
   const PRIORITIES = ['none', 'low', 'medium', 'high'];
   const TONES = ['chime', 'bell', 'beacon', 'radar', 'marimba', 'harp', 'crystal', 'pulse', 'dawn', 'digital'];
   const SNOOZES = [5, 10, 15, 30];
+  const SCALES = [0.8, 0.9, 1, 1.1, 1.25];
   const RING_LIMITS = [0, 1, 2, 5, 10]; // minutes before an unanswered alarm stops itself; 0 = never
   const isCustomSound = (id) => typeof id === 'string' && /^custom:[\w-]+$/.test(id);
   const validSound = (id) => TONES.includes(id) || isCustomSound(id);
@@ -45,6 +46,7 @@
     sort: 'smart',
     hideCompleted: false,
     theme: 'light',
+    uiScale: 0.9,
   });
 
   /* ------------------------------------------------------------------ */
@@ -117,6 +119,7 @@
       sort: SORTS.includes(s.sort) ? s.sort : d.sort,
       hideCompleted: bool(s.hideCompleted, d.hideCompleted),
       theme: THEMES.includes(s.theme) ? s.theme : d.theme,
+      uiScale: SCALES.includes(Number(s.uiScale)) ? Number(s.uiScale) : d.uiScale,
     };
   }
 
@@ -515,7 +518,7 @@
 
   W.store = {
     get state() { return state; },
-    KEY, SCHEMA, PRIORITIES, TONES, SNOOZES, RING_LIMITS, PHASES, SORTS, DEFAULT_SETTINGS,
+    KEY, SCHEMA, PRIORITIES, TONES, SNOOZES, SCALES, RING_LIMITS, PHASES, SORTS, DEFAULT_SETTINGS,
     init, flush, syncFromDisk, exportData, importData, reset,
     getTask, addTask, updateTask, deleteTask, restoreTask, restoreTasks, clearCompleted, reorderTasks,
     getAlarm, addAlarm, updateAlarm, patchAlarm, deleteAlarm, restoreAlarm,
