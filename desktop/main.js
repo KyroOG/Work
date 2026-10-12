@@ -3,6 +3,7 @@
 const { app, BrowserWindow, Tray, Menu, Notification, nativeImage, shell, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const focusLock = require('./focus-lock');
 
 app.setAppUserModelId('com.kyroog.work'); // needed for Windows notifications
 
@@ -19,6 +20,7 @@ let tray = null;
 let quitting = false;
 let prefs = Object.assign({}, DEFAULTS);
 let toldAboutTray = false;
+let lock = null;
 
 /* ---------- preferences ---------- */
 function loadPrefs() {
@@ -121,6 +123,9 @@ ipcMain.handle('desktop:zoom', (_e, f) => {
   win.webContents.setZoomFactor(f);
   win.setMinimumSize(Math.round(960 * f), Math.round(600 * f));
 });
+// Focus lock: read or change the schedule and the blocked-app list.
+ipcMain.handle('focus:get', () => (lock ? lock.get() : null));
+ipcMain.handle('focus:set', (_e, patch) => (lock ? lock.set(patch) : null));
 // An alarm is ringing: bring the window to the front so it can be dismissed.
 ipcMain.on('desktop:alarm', () => {
   showWindow();
@@ -139,6 +144,11 @@ app.whenReady().then(() => {
   loadPrefs();
   applyStartup();
   createTray();
+  lock = focusLock.create({
+    file: path.join(app.getPath('userData'), 'focus-lock.json'),
+    notify: (title, body) => { if (Notification.isSupported()) new Notification({ title, body, icon: ICON }).show(); },
+  });
+  lock.start();
   const hidden = process.argv.includes('--hidden') || app.getLoginItemSettings().wasOpenedAtLogin;
   createWindow(hidden && prefs.runInTray);
 });
