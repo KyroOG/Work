@@ -1,0 +1,56 @@
+diff --git a/desktop/focus-lock.js b/desktop/focus-lock.js
+index 0a8cf62..e6d4e83 100644
+--- a/desktop/focus-lock.js
++++ b/desktop/focus-lock.js
+@@ -97,22 +97,36 @@ function create({ file, notify }) {
+     });
+   }
+ 
+-  let lastSiteNote = 0;
++  // A site window gets a short warning first, then closes if it's still open. Windows that were
++  // already open when the lock began were warned by the main "Focus time" notice, so they just close.
++  const siteDue = new Map(); // "pid:site" -> when to close
+   function closeSites() {
+     const sites = cfg.sites.map((s) => s.toLowerCase());
+     if (!sites.length) return;
+     browserWindows((wins) => {
++      const now = Date.now();
++      const seen = new Set();
+       wins.forEach((w) => {
+         const t = w.title.toLowerCase();
+-        const hit = cfg.sites.find((s, i) => t.includes(sites[i]));
+-        if (!hit || !/^\d+$/.test(w.pid)) return;
++        const i = sites.findIndex((s) => t.includes(s));
++        if (i < 0 || !/^\d+$/.test(w.pid)) return;
++        const key = w.pid + ':' + sites[i];
++        seen.add(key);
++        const alreadyWarned = graceUntil > 0 && now - graceUntil < 15000;
++        if (!alreadyWarned && !siteDue.has(key)) {
++          const wait = Math.min(cfg.graceSeconds, 10);
++          siteDue.set(key, now + wait * 1000);
++          if (wait > 0) {
++            if (notify) notify('Focus time', cfg.sites[i] + ' is blocked right now. This window closes in ' + wait + ' seconds.');
++            return;
++          }
++        }
++        if (!alreadyWarned && now < siteDue.get(key)) return;
++        siteDue.delete(key);
+         // CloseMainWindow asks the browser window to close politely (no force-kill, no lost sessions).
+         execFile('powershell', ['-NoProfile', '-NonInteractive', '-Command', '(Get-Process -Id ' + w.pid + ').CloseMainWindow() | Out-Null'], { windowsHide: true }, () => {});
+-        if (notify && Date.now() - lastSiteNote > 60000) {
+-          lastSiteNote = Date.now();
+-          notify('Focus time', 'Closed a ' + hit + ' window. It’s outside your open hours.');
+-        }
+       });
++      siteDue.forEach((_v, k) => { if (!seen.has(k)) siteDue.delete(k); }); // tab changed or window closed
+     });
+   }
+ 
+@@ -124,6 +138,7 @@ function create({ file, notify }) {
+       if (notify) notify('Focus time', (cfg.sites.length ? 'Games and sites' : 'Games') + ' close in ' + cfg.graceSeconds + ' seconds. Save your progress.');
+     }
+     wasLocked = locked;
++    if (!locked) siteDue.clear();
+     if (locked && Date.now() >= graceUntil) { closeBlocked(); closeSites(); }
+   }
+ 
