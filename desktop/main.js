@@ -14,13 +14,12 @@ if (!app.requestSingleInstanceLock()) {
 
 const ICON = path.join(__dirname, 'app', 'icons', 'icon-512.png');
 const PREFS_FILE = () => path.join(app.getPath('userData'), 'desktop.json');
-const DEFAULTS = { launchAtStartup: true, runInTray: true };
+const DEFAULTS = { launchAtStartup: true, runInTray: true, trayNoticeShown: false };
 
 let win = null;
 let tray = null;
 let quitting = false;
 let prefs = Object.assign({}, DEFAULTS);
-let toldAboutTray = false;
 let lock = null;
 let updates = null;
 
@@ -79,8 +78,9 @@ function createWindow(startHidden) {
     if (quitting || !prefs.runInTray) return;
     e.preventDefault();
     win.hide();
-    if (!toldAboutTray && Notification.isSupported()) {
-      toldAboutTray = true;
+    if (!prefs.trayNoticeShown && Notification.isSupported()) {
+      prefs.trayNoticeShown = true; // only ever tell them once, even across restarts
+      savePrefs();
       new Notification({ title: 'Work is still running', body: 'Alarms will ring from the tray. Right-click the tray icon to quit.', icon: ICON }).show();
     }
   });
