@@ -24,7 +24,7 @@
         'div',
         { class: 'alarm-body', onClick: () => W.alarmEditor.open(a), role: 'button', tabIndex: 0, onKeydown: (e) => { if (e.key === 'Enter') W.alarmEditor.open(a); } },
         h('span', { class: 'alarm-time', text: U.fmtTime(a.time, W.store.state.settings.clock24) }),
-        h('span', { class: 'alarm-meta' }, a.label ? h('span', { class: 'alarm-label', text: a.label }) : null, h('span', { text: dayLetters(a.days) }))
+        h('span', { class: 'alarm-meta' }, a.label ? h('span', { class: 'alarm-label', text: a.label }) : null, a.focus ? h('span', { class: 'alarm-tag', text: 'Focus lock' }) : null, h('span', { text: dayLetters(a.days) }))
       ),
       h('button', {
         class: 'switch' + (a.enabled ? ' is-on' : ''),

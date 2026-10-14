@@ -4,6 +4,7 @@ const { app, BrowserWindow, Tray, Menu, Notification, nativeImage, shell, ipcMai
 const path = require('path');
 const fs = require('fs');
 const focusLock = require('./focus-lock');
+const updater = require('./updater');
 
 app.setAppUserModelId('com.kyroog.work'); // needed for Windows notifications
 
@@ -21,6 +22,7 @@ let quitting = false;
 let prefs = Object.assign({}, DEFAULTS);
 let toldAboutTray = false;
 let lock = null;
+let updates = null;
 
 /* ---------- preferences ---------- */
 function loadPrefs() {
@@ -126,6 +128,10 @@ ipcMain.handle('desktop:zoom', (_e, f) => {
 // Focus lock: read or change the schedule and the blocked-app list.
 ipcMain.handle('focus:get', () => (lock ? lock.get() : null));
 ipcMain.handle('focus:set', (_e, patch) => (lock ? lock.set(patch) : null));
+// Updates: read the current state, check now, or restart into the downloaded version.
+ipcMain.handle('update:get', () => (updates ? updates.get() : null));
+ipcMain.handle('update:check', () => { if (updates) updates.check(); });
+ipcMain.handle('update:install', () => { quitting = true; if (updates) updates.install(); });
 // An alarm is ringing: bring the window to the front so it can be dismissed.
 ipcMain.on('desktop:alarm', () => {
   showWindow();
@@ -151,6 +157,11 @@ app.whenReady().then(() => {
   lock.start();
   const hidden = process.argv.includes('--hidden') || app.getLoginItemSettings().wasOpenedAtLogin;
   createWindow(hidden && prefs.runInTray);
+  updates = updater.create({
+    app,
+    send: (state) => { if (win && !win.isDestroyed()) win.webContents.send('update:state', state); },
+  });
+  updates.start();
 });
 
 app.on('window-all-closed', () => {

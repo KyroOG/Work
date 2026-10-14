@@ -10,7 +10,7 @@
   function open(alarm) {
     const isNew = !alarm;
     const st = W.store.state.settings;
-    const draft = Object.assign({ time: '07:00', label: '', days: [], sound: st.tone, snooze: st.snooze }, alarm);
+    const draft = Object.assign({ time: '07:00', label: '', days: [], sound: st.tone, snooze: st.snooze, focus: false }, alarm);
 
     const timeInput = W.timeField.create({ value: draft.time, label: 'Alarm time', large: true });
     const labelInput = h('input', { type: 'text', class: 'field-title', placeholder: 'Label (optional)', maxlength: 60, value: draft.label });
@@ -26,14 +26,41 @@
           text: letter,
           'aria-pressed': days.includes(idx) ? 'true' : 'false',
           'aria-label': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][idx],
-          onClick: (e) => {
+          onClick: () => {
             days = days.includes(idx) ? days.filter((d) => d !== idx) : days.concat(idx);
-            e.currentTarget.classList.toggle('is-active');
-            e.currentTarget.setAttribute('aria-pressed', days.includes(idx) ? 'true' : 'false');
+            paintDays();
           },
         })
       )
     );
+    function paintDays() {
+      Array.from(dayGroup.children).forEach((btn, i) => {
+        const on = days.includes(DAYS[i][1]);
+        btn.classList.toggle('is-active', on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+
+    // Focus lock link (Windows app only): marks this as the reminder for when blocked apps close.
+    let focus = !!draft.focus;
+    const lockAvailable = !!(window.workDesktop && window.workDesktop.focusGet);
+    const focusSwitch = h('button', {
+      class: 'switch' + (focus ? ' is-on' : ''), type: 'button', role: 'switch',
+      'aria-checked': focus ? 'true' : 'false', 'aria-label': 'Focus lock alarm',
+      onClick: () => {
+        focus = !focus;
+        focusSwitch.classList.toggle('is-on', focus);
+        focusSwitch.setAttribute('aria-checked', focus ? 'true' : 'false');
+        if (!focus) return;
+        // Line it up with the lock: ring when the open window ends, on the lock's days.
+        window.workDesktop.focusGet().then((c) => {
+          if (!c) return;
+          timeInput.value = c.openTo;
+          days = c.days.slice();
+          paintDays();
+        }).catch(() => {});
+      },
+    });
 
     let sound = draft.sound;
     const soundRow = h('div', { class: 'sound-row' });
@@ -76,7 +103,7 @@
         timeInput.focus();
         return;
       }
-      const payload = { time: timeInput.value, label: labelInput.value.trim(), days, sound, snooze: parseInt(snoozeSelect.getValue(), 10) };
+      const payload = { time: timeInput.value, label: labelInput.value.trim() || (focus ? 'Focus time' : ''), days, sound, snooze: parseInt(snoozeSelect.getValue(), 10), focus };
       if (isNew) W.store.addAlarm(payload);
       else W.store.updateAlarm(alarm.id, payload);
       W.sheet.close();
@@ -97,6 +124,7 @@
       h('div', { class: 'field-label' }, h('span', { text: 'Repeat' }), dayGroup),
       h('div', { class: 'field-label' }, h('span', { text: 'Sound' }), soundRow),
       h('div', { class: 'field-label field-label-inline' }, h('span', { text: 'Snooze' }), snoozeSelect.el),
+      lockAvailable || focus ? h('div', { class: 'field-label field-label-inline' }, h('span', { text: 'Focus lock alarm' }), focusSwitch) : null,
       h(
         'div',
         { class: 'sheet-actions' },

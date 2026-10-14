@@ -356,6 +356,10 @@
 .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); border: 0; box-shadow: var(--shadow-sm); }
 .slider::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--accent); border: 0; box-shadow: var(--shadow-sm); }
 
+/* ---- Updates ---- */
+.update-track { width: 160px; height: 3px; margin-top: 6px; border-radius: 3px; background: color-mix(in srgb, var(--ink) 10%, transparent); overflow: hidden; }
+.update-bar { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 3px; transition: width var(--dur-fast) linear; }
+
 /* ---- Time field (12/24-hour aware) ---- */
 .time-field { display: inline-flex; align-items: center; gap: 2px; padding: 4px 8px; border-radius: var(--r-sm); background: var(--surface-sunken); border: 1px solid transparent; transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease); }
 .time-field:hover { border-color: var(--line); }
@@ -371,3 +375,13 @@
 .time-field.is-large .tf-seg, .time-field.is-large .tf-seg:hover, .time-field.is-large .tf-seg:focus { width: 2.2ch; font-family: var(--font-display); font-size: 72px; font-weight: 300; line-height: 1.1; padding: 2px 0; border-radius: 12px; }
 .time-field.is-large .tf-colon { font-family: var(--font-display); font-size: 60px; font-weight: 300; position: relative; top: -6px; }
 .time-field.is-large .tf-ampm { margin-left: 12px; padding: 8px 16px; font-size: 18px; align-self: center; }
+
+/* ---- Focus lock ---- */
+.settings-row .day-picker { gap: 4px; }
+.settings-row .day-btn { width: 30px; height: 30px; font-size: 12.5px; }
+.lock-apps-row { align-items: flex-start; }
+.lock-apps { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0; }
+.lock-app { display: inline-flex; align-items: center; gap: 2px; padding: 3px 3px 3px 11px; border-radius: var(--r-full); background: var(--surface-sunken); font-size: 13px; color: var(--ink-soft); }
+.lock-app button { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; line-height: 1; color: var(--ink-faint); transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+.lock-app button:hover { background: var(--danger-wash); color: var(--danger); }
+.alarm-tag { font-size: 12px; color: var(--accent); background: var(--accent-wash); padding: 1px 9px; border-radius: var(--r-full); }
