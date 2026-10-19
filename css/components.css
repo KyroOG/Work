@@ -258,7 +258,7 @@
 .switch { width: 40px; height: 24px; border-radius: var(--r-full); background: var(--line); position: relative; flex-shrink: 0; transition: background var(--dur-fast) var(--ease); }
 .switch:hover { background: color-mix(in srgb, var(--ink) 18%, var(--line)); }
 .switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: var(--shadow-sm); transition: transform var(--dur-fast) var(--ease); }
-.switch.is-on, .switch.is-on:hover { background: var(--good); }
+.switch.is-on, .switch.is-on:hover { background: var(--accent); }
 .switch.is-on::after { transform: translateX(16px); }
 
 /* ---- Toast ---- */
@@ -385,3 +385,16 @@
 .lock-app button { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; line-height: 1; color: var(--ink-faint); transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
 .lock-app button:hover { background: var(--danger-wash); color: var(--danger); }
 .alarm-tag { font-size: 12px; color: var(--accent); background: var(--accent-wash); padding: 1px 9px; border-radius: var(--r-full); }
+
+/* ---- Themes ---- */
+.theme-panel { display: flex; flex-direction: column; gap: var(--sp-4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--sp-3); }
+.theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: var(--sp-2); }
+.theme-tile { display: flex; flex-direction: column; gap: 8px; padding: 6px; border: 1.5px solid transparent; border-radius: var(--r-md); text-align: left; font-size: 12.5px; line-height: 1.25; color: var(--ink-soft); transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+.theme-tile:hover { background: color-mix(in srgb, var(--ink) 5%, transparent); color: var(--ink); }
+.theme-tile.is-active { border-color: var(--accent); color: var(--ink); }
+.theme-swatch { position: relative; display: block; height: 54px; border-radius: var(--r-sm); overflow: hidden; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 12%, transparent); }
+.theme-swatch-card { position: absolute; inset: 9px 9px -8px 9px; display: flex; flex-direction: column; gap: 4px; padding: 7px 8px; border-radius: 7px; }
+.ts-bar { display: block; height: 4px; width: 62%; border-radius: 2px; opacity: 0.85; }
+.ts-bar.ts-short { width: 38%; opacity: 0.4; }
+.ts-dot { display: block; width: 14px; height: 6px; border-radius: 3px; }
+.theme-appearance { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); padding: var(--sp-3) var(--sp-1) var(--sp-1); border-top: 1px solid var(--line); }

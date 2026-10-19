@@ -53,6 +53,39 @@
       )
     );
   }
+  function swatch(c) {
+    const el = h('span', { class: 'theme-swatch' }, h('span', { class: 'theme-swatch-card' }, h('i', { class: 'ts-bar' }), h('i', { class: 'ts-bar ts-short' }), h('i', { class: 'ts-dot' })));
+    el.style.background = c.paper;
+    const card = el.firstChild;
+    card.style.background = c.surface;
+    card.querySelectorAll('.ts-bar').forEach((b) => { b.style.background = c.ink; });
+    card.querySelector('.ts-dot').style.background = c.accent;
+    return el;
+  }
+  function themeTile(id, name, colors, active) {
+    return h('button', {
+      class: 'theme-tile' + (active ? ' is-active' : ''),
+      type: 'button',
+      'aria-pressed': active ? 'true' : 'false',
+      onClick: () => { if (!active) W.store.setSettings({ palette: id }); },
+    }, swatch(colors), h('span', { class: 'theme-name', text: name }));
+  }
+  function themesSection() {
+    const s = W.store.state.settings;
+    const P = W.palettes;
+    const isDefault = s.palette === 'default';
+    const defColors = P.DEFAULTS[W.theme.resolved] || P.DEFAULTS.light;
+    const tiles = [themeTile('default', 'Default', defColors, isDefault)].concat(P.BUILTIN.map((t) => themeTile(t.id, t.name, t, s.palette === t.id)));
+    return section(
+      'Themes',
+      h('div', { class: 'theme-panel' },
+        h('div', { class: 'theme-grid' }, tiles),
+        isDefault
+          ? h('div', { class: 'theme-appearance' }, h('span', { class: 'settings-row-label', text: 'Appearance' }), themeControl(s.theme))
+          : null
+      )
+    );
+  }
   function selectField(label, options, value, onChange) {
     return W.select.create({ options, value, label, variant: 'field', align: 'end', onChange }).el;
   }
@@ -330,10 +363,11 @@
 
     if (window.workDesktop && updateState) grid.appendChild(updatesSection());
 
+    grid.appendChild(themesSection());
+
     grid.appendChild(
       section(
         'Display',
-        row('Appearance', themeControl(s.theme)),
         ...(window.workDesktop
           ? [row('Interface size', selectField('Interface size', W.store.SCALES.map((n) => [n, Math.round(n * 100) + '%']), s.uiScale, (v) => W.store.setSettings({ uiScale: Number(v) })), 'Size of the whole app')]
           : []),

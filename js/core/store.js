@@ -46,6 +46,8 @@
     sort: 'smart',
     hideCompleted: false,
     theme: 'light',
+    palette: 'default',
+    customTheme: null,
     uiScale: 0.9,
   });
 
@@ -120,6 +122,8 @@
       sort: SORTS.includes(s.sort) ? s.sort : d.sort,
       hideCompleted: bool(s.hideCompleted, d.hideCompleted),
       theme: THEMES.includes(s.theme) ? s.theme : d.theme,
+      palette: W.palettes.has(s.palette) ? s.palette : d.palette,
+      customTheme: W.palettes.cleanCustom(s.customTheme),
       uiScale: SCALES.includes(Number(s.uiScale)) ? Number(s.uiScale) : d.uiScale,
     };
   }

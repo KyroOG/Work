@@ -141,7 +141,7 @@
   function boot() {
     W.store.init();
     W.sounds.init();
-    W.theme.set(W.store.state.settings.theme);
+    W.theme.apply(W.store.state.settings);
     applyScale();
     buildShell();
     W.events.on('route', mountView);
@@ -149,7 +149,7 @@
     W.timer.init();
     W.alarms.init();
 
-    W.events.on('settings', () => { W.theme.set(W.store.state.settings.theme); applyScale(); });
+    W.events.on('settings', () => { W.theme.apply(W.store.state.settings); applyScale(); });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { indicatorPlaced = false; moveIndicator(active); });
     W.events.on('focus', paintMini);
     W.events.on('tasks', paintMini);
