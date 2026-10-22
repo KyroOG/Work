@@ -13,11 +13,11 @@ Windows desktop app (Electron wrapper in desktop/) with to-do, Pomodoro and alar
 - Tasks have a name (subject) and a description (what to do).
 
 ## Done
-- Polish Parts 1-5 (bugs, task list, look and feel, alarm sounds and settings, Electron installer with GitHub Actions build on version tags, README, MIT license). v1.0.0 tag pushed.
+- Polish Parts 1-5 (bugs, task list, [x] look and feel, alarm sounds and settings, Electron installer with GitHub Actions build on version tags, README, MIT license). v1.0.0 tag pushed.
 - Focus Lock (closes games/launchers outside 3-4 pm on weekdays, runs in the Electron main process): engine, settings UI, alarm link, auto-update (electron-updater), website blocking (default: YouTube) all built and tested in the dev build.
 
 ## Next
-1. Polish the Settings page look (more items coming from me).
+1. Polish the Settings page look [x] (more items coming from me).
 2. Release: bump the version in desktop/package.json and js/core/utils.js, then tag.
 3. Feedback list: alarm time picker digits get clipped and look small; better task-adding flow (set priority/due date right after adding); low-quality logo/icons; app scaling to 90%; window title should stay "Work" while the timer runs; faster task-completion animation; in-app update feature; run anti-slop over the whole project.
 4. System tray + launch on startup so alarms always ring.
