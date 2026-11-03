@@ -138,7 +138,7 @@
     const f = store.state.focus;
     if (f.status === 'running') logPartial(false);
     sessionStart = f.status === 'running' ? Date.now() : 0;
-    store.setFocus({ taskId, endsAt: f.status === 'running' ? Date.now() + f.remaining : 0 });
+    store.setFocus({ taskId, endsAt: f.status === 'running' ? f.endsAt : 0 });
   }
 
   // Recompute immediately on return to the tab, in case rAF was throttled while hidden.

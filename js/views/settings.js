@@ -62,27 +62,179 @@
     card.querySelector('.ts-dot').style.background = c.accent;
     return el;
   }
-  function themeTile(id, name, colors, active) {
+  function themeTile(id, name, colors, active, patch) {
     return h('button', {
       class: 'theme-tile' + (active ? ' is-active' : ''),
       type: 'button',
       'aria-pressed': active ? 'true' : 'false',
-      onClick: () => { if (!active) W.store.setSettings({ palette: id }); },
+      onClick: () => { if (!active) W.store.setSettings(patch || { palette: id }); },
     }, swatch(colors), h('span', { class: 'theme-name', text: name }));
   }
+
+  /* ---------- Custom colour scheme ---------- */
+  const CUSTOM_FIELDS = [['paper', 'Background'], ['surface', 'Cards'], ['ink', 'Text'], ['accent', 'Accent']];
+
+  /** "#abc", "ABC" or "#aabbcc" -> "#aabbcc", or null if it isn't a colour. */
+  function normHex(v) {
+    v = String(v || '').trim().replace(/^#/, '');
+    if (/^[0-9a-f]{3}$/i.test(v)) v = v.replace(/./g, (ch) => ch + ch);
+    return /^[0-9a-f]{6}$/i.test(v) ? '#' + v.toLowerCase() : null;
+  }
+  /** The colours currently on screen, as a custom theme, so "Custom" starts from what you already see. */
+  function currentLook() {
+    const s = W.store.state.settings;
+    const P = W.palettes;
+    const th = s.palette === 'default' ? null : P.get(s.palette, s.customTheme);
+    const src = th || Object.assign({ mode: W.theme.resolved }, P.DEFAULTS[W.theme.resolved]);
+    return P.cleanCustom({ mode: src.mode, paper: src.paper, surface: src.surface, ink: src.ink, accent: src.accent });
+  }
+  /** First time only (nothing edited yet): seed Custom from the current look. */
+  function customTilePatch() {
+    const P = W.palettes;
+    const untouched = JSON.stringify(W.store.state.settings.customTheme) === JSON.stringify(P.cleanCustom(null));
+    return untouched ? { palette: 'custom', customTheme: currentLook() } : { palette: 'custom' };
+  }
+  /* ---------- Copy colours from Windows Terminal ---------- */
+  function mixHex(a, b, t) {
+    const rgb = (x) => [1, 3, 5].map((i) => parseInt(x.slice(i, i + 2), 16));
+    const A = rgb(a);
+    const B = rgb(b);
+    return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join('');
+  }
+  /** A Windows Terminal scheme ({ background, foreground, blue, ... }) as a custom theme, or null if it lacks the basics. */
+  function schemeToTheme(sc) {
+    const bg = normHex(sc && sc.background);
+    const fg = normHex(sc && sc.foreground);
+    if (!bg || !fg) return null;
+    const r = parseInt(bg.slice(1, 3), 16), g = parseInt(bg.slice(3, 5), 16), b = parseInt(bg.slice(5, 7), 16);
+    const dark = (r * 299 + g * 587 + b * 114) / 1000 < 140;
+    const P = W.palettes;
+    return P.cleanCustom({
+      mode: dark ? 'dark' : 'light',
+      paper: bg,
+      surface: dark ? mixHex(bg, fg, 0.06) : mixHex(bg, '#ffffff', 0.7),
+      ink: fg,
+      accent: normHex(sc.blue) || normHex(sc.brightBlue) || normHex(sc.cursorColor) || P.DEFAULTS[dark ? 'dark' : 'light'].accent,
+    });
+  }
+  function applyScheme(sc, name) {
+    const t = schemeToTheme(sc);
+    if (!t) { W.toast.show({ text: 'That scheme needs background and foreground colours.' }); return; }
+    W.store.setSettings({ palette: 'custom', customTheme: t });
+    W.sheet.close();
+    W.toast.show({ text: 'Copied ' + (name || 'your scheme') });
+  }
+  /** Accepts a scheme object, an array of them, or a whole "schemes" block pasted from settings.json. */
+  function parsePasted(text) {
+    let v = JSON.parse(text.trim().replace(/^\uFEFF/, '').replace(/,(\s*[}\]])/g, '$1'));
+    if (Array.isArray(v)) v = v[0];
+    if (v && Array.isArray(v.schemes)) v = v.schemes[0];
+    return v;
+  }
+  function openTerminalImport() {
+    const D = window.workDesktop;
+    const list = h('ul', { class: 'task-picker-list' });
+    const area = h('textarea', { class: 'field-notes', rows: 5, spellcheck: false, 'aria-label': 'Colour scheme JSON', placeholder: 'Or paste a scheme from Windows Terminal settings.json' });
+    const pasteBtn = h('button', {
+      type: 'button', class: 'btn btn-primary', text: 'Use pasted scheme',
+      onClick: () => {
+        if (!area.value.trim()) { area.focus(); return; }
+        try {
+          const sc = parsePasted(area.value);
+          applyScheme(sc, sc && sc.name);
+        } catch (e) {
+          W.toast.show({ text: 'That doesn’t look like a colour scheme.' });
+        }
+      },
+    });
+    const body = h('div', { class: 'task-picker' },
+      h('h2', { class: 'sheet-title', text: 'Copy from Windows Terminal' }),
+      list,
+      area,
+      h('div', { class: 'sheet-actions' }, h('div', { class: 'sheet-actions-right' },
+        h('button', { type: 'button', class: 'btn btn-ghost', text: 'Cancel', onClick: () => W.sheet.close() }),
+        pasteBtn
+      ))
+    );
+    W.sheet.open({ title: 'Copy from Windows Terminal', body });
+    if (D && D.terminalSchemes) {
+      D.terminalSchemes().then((res) => {
+        const all = (res && res.schemes) || [];
+        if (!all.length) {
+          list.appendChild(h('li', {}, h('p', { class: 'empty-body', text: 'Couldn’t find your Windows Terminal schemes. You can paste one below.' })));
+          return;
+        }
+        all.slice().sort((a, b) => (b.name === res.active) - (a.name === res.active)).forEach((sc) => {
+          list.appendChild(h('li', {}, h('button', {
+            type: 'button', class: 'task-picker-row',
+            text: sc.name + (sc.name === res.active ? ' (in use)' : ''),
+            onClick: () => applyScheme(sc, sc.name),
+          })));
+        });
+      }).catch(() => {});
+    }
+  }
+  function customEditor(c) {
+    const P = W.palettes;
+    const save = (next) => W.store.setSettings({ customTheme: Object.assign({}, c, next) });
+    // Live preview while dragging in the picker: paint only, no save, no page rebuild.
+    const preview = (next) => W.theme.apply({ theme: W.store.state.settings.theme, palette: 'custom', customTheme: Object.assign({}, c, next) }, true);
+    const base = (mode) => Object.assign({ mode }, P.DEFAULTS[mode]);
+    const crow = (label, control) => h('div', { class: 'custom-row' }, h('span', { class: 'settings-row-label', text: label }), control);
+
+    const modeCtl = h('div', { class: 'seg seg-inline', role: 'radiogroup', 'aria-label': 'Base mode' },
+      [['light', 'Light'], ['dark', 'Dark']].map(([val, label]) =>
+        h('button', {
+          type: 'button',
+          class: 'seg-btn' + (val === c.mode ? ' is-active' : ''),
+          role: 'radio',
+          'aria-checked': val === c.mode ? 'true' : 'false',
+          text: label,
+          // Switching base starts from that mode's default colours so text stays readable.
+          onClick: () => { if (val !== c.mode) W.store.setSettings({ customTheme: base(val) }); },
+        })
+      )
+    );
+
+    const rows = CUSTOM_FIELDS.map(([key, label]) => {
+      const pick = h('input', { type: 'color', class: 'color-input', value: c[key], 'aria-label': label + ' colour' });
+      const hex = h('input', { type: 'text', class: 'field-inline hex-input', value: c[key], maxlength: 7, spellcheck: false, autocomplete: 'off', 'aria-label': label + ' hex code' });
+      pick.addEventListener('input', () => { hex.value = pick.value; preview({ [key]: pick.value }); });
+      pick.addEventListener('change', () => save({ [key]: pick.value }));
+      pick.addEventListener('blur', () => W.theme.apply(W.store.state.settings, true)); // picker dismissed without choosing: drop the preview
+      hex.addEventListener('change', () => {
+        const v = normHex(hex.value);
+        if (!v) { hex.value = c[key]; W.toast.show({ text: 'Use a hex code like #407a5a.' }); return; }
+        save({ [key]: v });
+      });
+      return crow(label, h('div', { class: 'color-field' }, pick, hex));
+    });
+
+    return h('div', { class: 'custom-editor' },
+      crow('Base', modeCtl),
+      rows,
+      crow('Terminal', h('button', { class: 'btn btn-ghost', type: 'button', text: 'Copy from Windows Terminal', onClick: openTerminalImport })),
+      crow('Start over', h('button', { class: 'btn btn-ghost', type: 'button', text: 'Reset colours', onClick: () => W.store.setSettings({ customTheme: base(c.mode) }) }))
+    );
+  }
+
   function themesSection() {
     const s = W.store.state.settings;
     const P = W.palettes;
     const isDefault = s.palette === 'default';
+    const isCustom = s.palette === 'custom';
     const defColors = P.DEFAULTS[W.theme.resolved] || P.DEFAULTS.light;
-    const tiles = [themeTile('default', 'Default', defColors, isDefault)].concat(P.BUILTIN.map((t) => themeTile(t.id, t.name, t, s.palette === t.id)));
+    const tiles = [themeTile('default', 'Default', defColors, isDefault)]
+      .concat(P.BUILTIN.map((t) => themeTile(t.id, t.name, t, s.palette === t.id)))
+      .concat(themeTile('custom', 'Custom', s.customTheme, isCustom, customTilePatch()));
     return section(
       'Themes',
       h('div', { class: 'theme-panel' },
         h('div', { class: 'theme-grid' }, tiles),
         isDefault
           ? h('div', { class: 'theme-appearance' }, h('span', { class: 'settings-row-label', text: 'Appearance' }), themeControl(s.theme))
-          : null
+          : null,
+        isCustom ? customEditor(s.customTheme) : null
       )
     );
   }

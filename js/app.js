@@ -15,16 +15,34 @@
   let viewEl = null;
   let tabButtons = {};
   let mini = null;
+  let miniWatch = null;
   let navIndicator = null;
   let indicatorPlaced = false;
   const PHASE = { focus: 'Focus', short: 'Short break', long: 'Long break' };
   let active = null;
 
+  function paintMiniWatch(sw, hideIt) {
+    const show = sw.status !== 'idle' && !hideIt;
+    miniWatch.hidden = !show;
+    if (!show) return;
+    const t = W.stopwatch.ms();
+    const clock = miniWatch.querySelector('.mini-clock');
+    miniWatch.querySelector('.mini-phase').textContent = sw.status === 'paused' ? 'Paused' : 'Stopwatch';
+    W.dom.setClock(clock, W.stopwatch.fmt(t));
+    clock.classList.toggle('is-long', t >= 3600000);
+    miniWatch.classList.toggle('is-running', sw.status === 'running');
+  }
+
   function paintMini() {
     if (!mini) return;
     const f = W.store.state.focus;
-    document.body.classList.toggle('is-immersed', f.status === 'running' && W.router.current === 'focus');
-    const show = f.status !== 'idle' && W.router.current !== 'focus';
+    const sw = W.stopwatch.get();
+    const onFocus = W.router.current === 'focus';
+    const swView = onFocus && !!(W.views.focus && W.views.focus.isStopwatch());
+    // The Focus tab shows one clock at a time, so the other one gets the sidebar.
+    document.body.classList.toggle('is-immersed', onFocus && (swView ? sw.status === 'running' : f.status === 'running'));
+    paintMiniWatch(sw, swView);
+    const show = f.status !== 'idle' && (!onFocus || swView);
     mini.hidden = !show;
     if (!show) return;
     const remaining = f.status === 'running' ? Math.max(0, f.endsAt - Date.now()) : f.remaining;
@@ -87,6 +105,7 @@
       else { W.router.go('tasks'); setTimeout(focusInput, 0); }
     } else if (e.key === ' ' && W.router.current === 'focus' && t.tagName !== 'BUTTON') {
       e.preventDefault();
+      if (W.views.focus.isStopwatch()) { W.stopwatch.toggle(); return; }
       const st = W.store.state.focus.status;
       if (st === 'running') W.timer.pause();
       else if (st === 'paused') W.timer.resume();
@@ -102,6 +121,11 @@
       h('span', { class: 'mini-clock' }),
       h('span', { class: 'mini-task' }),
       h('span', { class: 'mini-track' }, h('span', { class: 'mini-bar' }))
+    );
+
+    miniWatch = h('button', { class: 'mini-timer mini-watch', type: 'button', hidden: true, 'aria-label': 'Open stopwatch', onClick: () => W.views.focus.openStopwatch() },
+      h('span', { class: 'mini-phase' }),
+      h('span', { class: 'mini-clock' })
     );
 
     const sidebar = h(
@@ -124,7 +148,7 @@
           return btn;
         })
       ),
-      mini
+      h('div', { class: 'mini-stack' }, mini, miniWatch)
     );
 
     document.body.appendChild(h('div', { class: 'app' }, sidebar, viewEl));
@@ -156,6 +180,9 @@
     W.events.on('route', paintMini);
     document.addEventListener('keydown', onKey);
     W.events.on('timer:tick', paintMini);
+    W.events.on('stopwatch', paintMini);
+    W.events.on('stopwatch:tick', paintMini);
+    W.events.on('focus:mode', paintMini);
     document.addEventListener('pointerdown', () => W.audio.unlock(), { once: true, passive: true });
 
     if ('serviceWorker' in navigator) {

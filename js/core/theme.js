@@ -53,11 +53,11 @@
   }
 
   /** Apply the theme-related settings: { theme, palette, customTheme }. */
-  function apply(s) {
+  function apply(s, instant) {
     mode = MODES.indexOf(s.theme) >= 0 ? s.theme : 'light';
     palette = P.has(s.palette) ? s.palette : 'default';
     custom = P.cleanCustom(s.customTheme);
-    paint(true);
+    paint(!instant);
   }
 
   // First paint: read the saved choice straight from storage.

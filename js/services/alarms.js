@@ -70,7 +70,7 @@
     const a = ringing;
     W.audio.stopRing();
     W.title.clear('alarm');
-    store.patchAlarm(a.id, { snoozeUntil: Date.now() + a.snooze * 60000 });
+    store.patchAlarm(a.id, { snoozeUntil: Date.now() + a.snooze * 60000, enabled: true });
     W.events.emit('alarm:snooze', a);
     ringing = null;
   }

@@ -1,0 +1,12 @@
+/* Work — stopwatch additions: Focus view switch and the sidebar mini display */
+
+/* Room for the Timer / Stopwatch switch above the ring. */
+.focus-view { --ring: clamp(220px, calc(100vh - 360px), 340px); }
+.focus-view [hidden] { display: none; }
+/* Past an hour the clock has two more characters, so it steps down to stay inside the ring. */
+.focus-view .focus-clock.is-long { font-size: 18cqw; }
+
+/* The Pomodoro mini timer and the stopwatch mini display share the bottom of the sidebar. */
+.mini-stack { margin-top: auto; display: flex; flex-direction: column; gap: var(--sp-2); }
+.mini-stack .mini-timer { margin-top: 0; }
+.mini-watch .mini-clock.is-long { font-size: 20px; }

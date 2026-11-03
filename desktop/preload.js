@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('workDesktop', {
   alarmRinging: () => ipcRenderer.send('desktop:alarm'),
   focusGet: () => ipcRenderer.invoke('focus:get'),
   focusSet: (patch) => ipcRenderer.invoke('focus:set', patch),
+  terminalSchemes: () => ipcRenderer.invoke('terminal:schemes'),
   setZoom: (f) => ipcRenderer.invoke('desktop:zoom', f),
   updateGet: () => ipcRenderer.invoke('update:get'),
   updateCheck: () => ipcRenderer.invoke('update:check'),

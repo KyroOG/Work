@@ -1,7 +1,7 @@
 {
   "name": "work",
   "productName": "Work",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Tasks, focus timer and alarms in one calm place.",
   "author": "KyroOG",
   "license": "MIT",
@@ -21,11 +21,34 @@
   "build": {
     "appId": "com.kyroog.work",
     "productName": "Work",
-    "files": ["main.js", "preload.js", "focus-lock.js", "updater.js", "app/**/*"],
-    "publish": [{ "provider": "github", "owner": "kyroog", "repo": "Work" }],
+    "files": [
+      "main.js",
+      "preload.js",
+      "focus-lock.js",
+      "updater.js",
+      "app/**/*"
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "kyroog",
+        "repo": "Work"
+      }
+    ],
     "icon": "app/icons/icon-512.png",
-    "directories": { "output": "dist" },
-    "win": { "target": "nsis", "artifactName": "Work-Setup-${version}.${ext}" },
-    "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true, "createDesktopShortcut": true, "createStartMenuShortcut": true }
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "artifactName": "Work-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
   }
 }

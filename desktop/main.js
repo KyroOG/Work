@@ -125,9 +125,63 @@ ipcMain.handle('desktop:zoom', (_e, f) => {
   win.webContents.setZoomFactor(f);
   win.setMinimumSize(Math.round(960 * f), Math.round(600 * f));
 });
+// Windows Terminal's settings.json allows comments and trailing commas; strip them (leaving strings alone).
+function stripJsonc(s) {
+  let out = '';
+  let str = false;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    const n = s[i + 1];
+    if (str) {
+      out += c;
+      if (c === '\\') out += s[++i] || '';
+      else if (c === '"') str = false;
+    } else if (c === '"') {
+      str = true;
+      out += c;
+    } else if (c === '/' && n === '/') {
+      while (i < s.length && s[i] !== '\n') i++;
+      out += '\n';
+    } else if (c === '/' && n === '*') {
+      i += 2;
+      while (i < s.length && !(s[i] === '*' && s[i + 1] === '/')) i++;
+      i++;
+    } else {
+      out += c;
+    }
+  }
+  return out.replace(/^\uFEFF/, '').replace(/,(\s*[}\]])/g, '$1');
+}
+// Read-only: the colour schemes in Windows Terminal's settings, plus the one the default profile uses.
+function terminalSchemes() {
+  const base = process.env.LOCALAPPDATA;
+  if (!base) return { schemes: [], active: null };
+  const dirs = [
+    path.join(base, 'Packages', 'Microsoft.WindowsTerminal_8wekyb3d8bbwe', 'LocalState'),
+    path.join(base, 'Packages', 'Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe', 'LocalState'),
+    path.join(base, 'Microsoft', 'Windows Terminal'),
+  ];
+  for (const dir of dirs) {
+    try {
+      const cfg = JSON.parse(stripJsonc(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8')));
+      const pick = (v) => (typeof v === 'string' ? v : v && (v.dark || v.light)) || null;
+      const profiles = cfg.profiles || {};
+      const list = Array.isArray(profiles) ? profiles : profiles.list || [];
+      const def = list.find((p) => p && p.guid === cfg.defaultProfile);
+      const active = pick(def && def.colorScheme) || pick(profiles.defaults && profiles.defaults.colorScheme);
+      const keys = ['name', 'background', 'foreground', 'cursorColor', 'blue', 'brightBlue'];
+      const schemes = (Array.isArray(cfg.schemes) ? cfg.schemes : [])
+        .filter((s) => s && typeof s.name === 'string')
+        .map((s) => keys.reduce((o, k) => { if (typeof s[k] === 'string') o[k] = s[k]; return o; }, {}));
+      return { schemes, active };
+    } catch (e) { /* try the next location */ }
+  }
+  return { schemes: [], active: null };
+}
 // Focus lock: read or change the schedule and the blocked-app list.
 ipcMain.handle('focus:get', () => (lock ? lock.get() : null));
 ipcMain.handle('focus:set', (_e, patch) => (lock ? lock.set(patch) : null));
+ipcMain.handle('terminal:schemes', () => terminalSchemes());
 // Updates: read the current state, check now, or restart into the downloaded version.
 ipcMain.handle('update:get', () => (updates ? updates.get() : null));
 ipcMain.handle('update:check', () => { if (updates) updates.check(); });

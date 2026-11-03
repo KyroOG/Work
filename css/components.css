@@ -400,3 +400,13 @@
 .ts-bar.ts-short { width: 38%; opacity: 0.4; }
 .ts-dot { display: block; width: 14px; height: 6px; border-radius: 3px; }
 .theme-appearance { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); padding-top: var(--sp-4); border-top: 1px solid var(--line); }
+
+/* ---- Custom colour scheme ---- */
+.custom-editor { display: flex; flex-direction: column; gap: var(--sp-3); padding-top: var(--sp-4); border-top: 1px solid var(--line); }
+.custom-row { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); min-height: 36px; }
+.color-field { display: flex; align-items: center; gap: var(--sp-3); }
+.color-field .color-input, .color-field .color-input:hover, .color-field .color-input:focus { -webkit-appearance: none; appearance: none; width: 34px; height: 34px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: none; cursor: pointer; overflow: hidden; }
+.color-field .color-input::-webkit-color-swatch-wrapper { padding: 0; }
+.color-field .color-input::-webkit-color-swatch { border: 0; border-radius: 50%; }
+.color-field .color-input::-moz-color-swatch { border: 0; border-radius: 50%; }
+.color-field .hex-input { width: 96px; font-variant-numeric: tabular-nums; text-transform: lowercase; }
